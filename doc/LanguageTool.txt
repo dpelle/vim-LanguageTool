@@ -125,7 +125,7 @@ following packages: >
 
 LanguageTool can then be downloaded and built with Maven as follows: >
 
-  $ svn co http://svn.code.sf.net/p/languagetool/code/trunk/languagetool
+  $ git clone https://github.com/languagetool-org/languagetool.git
   $ cd languagetool
   $ mvn clean package
 
@@ -159,7 +159,7 @@ g:languagetool_jar                                       *g:languagetool_jar*
 
   Example: >
 
-  :let g:languagetool_jar='$HOME/sb/lt/languagetool/languagetool-standalone/target/LanguageTool-2.3-SNAPSHOT/LanguageTool-2.3-SNAPSHOT/languagetool-commandline.jar'
+  :let g:languagetool_jar='$HOME/languagetool/languagetool-standalone/target/LanguageTool-2.3-SNAPSHOT/LanguageTool-2.3-SNAPSHOT/languagetool-commandline.jar'
 
 g:languagetool_lang
 
