@@ -104,7 +104,9 @@ can choose to:
 * or download a nightly build LanguageTool-.*-snapshot.zip from
   http://www.languagetool.org/download/snapshots/. It contains a more
   recent version than the stable version but it is not as well tested.
-* or checkout and build the latest LanguageTool from sources in subversion.
+* or checkout and build the latest LanguageTool from sources in git.
+
+LanguageTool requires Java-7.
 
 4.2.1 Download the stand-alone version of LanguageTool
 
@@ -115,13 +117,13 @@ from http://www.languagetool.org/ and unzip it: >
 
 This should extract LanguageTool.jar among several other files.
 
-4.2.2 Build LanguageTool from sources in Subversion~
+4.2.2 Build LanguageTool from sources in git
 
 If you prefer to build LanguageTool yourself from sources, you first need
 to install the pre-requisite packages. On Ubuntu, you need to install the
 following packages: >
 
-  $ sudo apt-get install openjdk-7-jdk mvn subversion
+  $ sudo apt-get install openjdk-7-jdk mvn git
 
 LanguageTool can then be downloaded and built with Maven as follows: >
 
