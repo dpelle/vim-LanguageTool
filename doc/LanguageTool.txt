@@ -2,7 +2,7 @@
 *LanguageTool*
 
 Author:      Dominique Pellé <dominique.pelle@gmail.com>
-Last Change: 10 Aug 2013
+Last Change: 20 Feb 2014
 
 For Vim version 7.0 and above
 
@@ -71,7 +71,7 @@ LanguageTool can be downloaded from:
 
 4. Installation                                   *languagetool-installation*
 
-4.1 Installing the plugin~
+4.1 Installing the plugin
 
 Unzip file LanguageTool.zip plugin from in your personal |vimfiles| directory
 (~/.vim under Unix or %HOMEPATH%\vimfiles under Windows): >
@@ -91,7 +91,7 @@ You have to enable plugins by adding these two lines in your |.vimrc| file: >
   set nocompatible
   filetype plugin on
 
-4.2 Installing LanguageTool~
+4.2 Installing LanguageTool
 
 To use this plugin, you need to install the Java LanguageTool program. You
 can choose to:
@@ -106,16 +106,18 @@ can choose to:
   recent version than the stable version but it is not as well tested.
 * or checkout and build the latest LanguageTool from sources in git.
 
-LanguageTool requires Java-7.
+Recent versions of LanguageTool require Java-7.
 
 4.2.1 Download the stand-alone version of LanguageTool
 
 Download the stand-alone version of LanguageTool (LanguageTool-*.zip)
-from http://www.languagetool.org/ and unzip it: >
+from http://www.languagetool.org/, click on "LanguageTool stand-alone
+for your desktop" to download it. Unzip it: >
 
-  $ unzip LanguageTool-2.2.zip
+  $ unzip LanguageTool-2.4.1.zip
 
-This should extract LanguageTool.jar among several other files.
+This should extract the file LanguageTool-2.4.1/languagetool-commandline.jar
+among several other files.
 
 4.2.2 Build LanguageTool from sources in git
 
@@ -133,14 +135,14 @@ LanguageTool can then be downloaded and built with Maven as follows: >
 
 After the build, the command line version of LanguageTool can be found in: >
 
-  ./languagetool-standalone/target/LanguageTool-2.3-SNAPSHOT/LanguageTool-2.3-SNAPSHOT/languagetool-commandline.jar
+  ./languagetool-standalone/target/LanguageTool-2.5-SNAPSHOT/LanguageTool-2.5-SNAPSHOT/languagetool-commandline.jar
 
-4.3 Configuring the location of LanguageTool.jar~
+4.3 Configuring the location of the jar file
 
 After installing LanguageTool, you must specify the location of the file
-LanguageTool.jar in your $HOME/.vimrc file. Example: >
+languagetool-commandline.jar in your $HOME/.vimrc file. Example: >
 
-  let g:languagetool_jar='$HOME/languagetool/languagetool-standalone/target/LanguageTool-2.3-SNAPSHOT/LanguageTool-2.3-SNAPSHOT/languagetool-commandline.jar'
+  let g:languagetool_jar='$HOME/languagetool/languagetool-standalone/target/LanguageTool-2.5-SNAPSHOT/LanguageTool-2.5-SNAPSHOT/languagetool-commandline.jar'
 
 See section |languagetool-configuration| for more optional settings.
 
@@ -157,13 +159,13 @@ of the LanguageTool plugin.
 g:languagetool_jar                                       *g:languagetool_jar*
 
   This variable specifies the location of the LanguageTool java grammar
-  checker program.  Default is empty.
+  checker program. Default is empty.
 
   Example: >
 
-  :let g:languagetool_jar='$HOME/languagetool/languagetool-standalone/target/LanguageTool-2.3-SNAPSHOT/LanguageTool-2.3-SNAPSHOT/languagetool-commandline.jar'
+  :let g:languagetool_jar='$HOME/languagetool/languagetool-standalone/target/LanguageTool-2.5-SNAPSHOT/LanguageTool-2.5-SNAPSHOT/languagetool-commandline.jar'
 
-g:languagetool_lang
+g:languagetool_lang                                      *g:languagetool_lang*
 
   The language code to use for the language tool checker. If undefined,
   plugin tries to guess the language of the Vim spelling checker
