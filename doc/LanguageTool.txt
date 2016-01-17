@@ -2,7 +2,7 @@
 *LanguageTool*
 
 Author:      Dominique Pellé <dominique.pelle@gmail.com>
-Last Change: 20 Feb 2014
+Last Change: 17 Jan 2016
 
 For Vim version 7.0 and above
 
@@ -51,10 +51,6 @@ an idea of what the LanguageTool plugin does:
   http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_en.png
   http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_fr.png
 
-A screencast demo is also available at:
-
-  http://shelr.tv/records/4fba8ef99660803e4f00001f
-
 ============================================================================
 
 3. Download                                           *languagetool-download*
@@ -71,7 +67,7 @@ LanguageTool can be downloaded from:
 
 4. Installation                                   *languagetool-installation*
 
-4.1 Installing the plugin
+4.1 Installing the plugin~
 
 Unzip file LanguageTool.zip plugin from in your personal |vimfiles| directory
 (~/.vim under Unix or %HOMEPATH%\vimfiles under Windows): >
@@ -91,13 +87,13 @@ You have to enable plugins by adding these two lines in your |.vimrc| file: >
   set nocompatible
   filetype plugin on
 
-4.2 Installing LanguageTool
+4.2 Installing LanguageTool~
 
 To use this plugin, you need to install the Java LanguageTool program. You
 can choose to:
 
 * download stand-alone version of LanguageTool (LanguageTool-*.zip) from:
-  http://www.languagetool.org/ using the orange button labelled
+  http://www.languagetool.org/ using the orange button labeled
   "Download LanguageTool for stand-alone use". The standalone version of
   Vim not only does grammar checking but also contains Hunspell dictionaries
   for spell checking.
@@ -106,26 +102,26 @@ can choose to:
   recent version than the stable version but it is not as well tested.
 * or checkout and build the latest LanguageTool from sources in git.
 
-Recent versions of LanguageTool require Java-7.
+Recent versions of LanguageTool require Java-8.
 
-4.2.1 Download the stand-alone version of LanguageTool
+4.2.1 Download the stand-alone version of LanguageTool~
 
 Download the stand-alone version of LanguageTool (LanguageTool-*.zip)
 from http://www.languagetool.org/, click on "LanguageTool stand-alone
 for your desktop" to download it. Unzip it: >
 
-  $ unzip LanguageTool-2.4.1.zip
+  $ unzip LanguageTool-3.2.zip
 
-This should extract the file LanguageTool-2.4.1/languagetool-commandline.jar
+This should extract the file LanguageTool-3.2/languagetool-commandline.jar
 among several other files.
 
-4.2.2 Build LanguageTool from sources in git
+4.2.2 Build LanguageTool from sources in git~
 
 If you prefer to build LanguageTool yourself from sources, you first need
 to install the pre-requisite packages. On Ubuntu, you need to install the
 following packages: >
 
-  $ sudo apt-get install openjdk-7-jdk mvn git
+  $ sudo apt-get install openjdk-8-jdk mvn git
 
 LanguageTool can then be downloaded and built with Maven as follows: >
 
@@ -135,14 +131,14 @@ LanguageTool can then be downloaded and built with Maven as follows: >
 
 After the build, the command line version of LanguageTool can be found in: >
 
-  ./languagetool-standalone/target/LanguageTool-2.5-SNAPSHOT/LanguageTool-2.5-SNAPSHOT/languagetool-commandline.jar
+  ./languagetool-standalone/target/LanguageTool-3.3-SNAPSHOT/LanguageTool-3.3-SNAPSHOT/languagetool-commandline.jar
 
-4.3 Configuring the location of the jar file
+4.3 Configuring the location of the jar file~
 
 After installing LanguageTool, you must specify the location of the file
 languagetool-commandline.jar in your $HOME/.vimrc file. Example: >
 
-  let g:languagetool_jar='$HOME/languagetool/languagetool-standalone/target/LanguageTool-2.5-SNAPSHOT/LanguageTool-2.5-SNAPSHOT/languagetool-commandline.jar'
+  let g:languagetool_jar='$HOME/languagetool/languagetool-standalone/target/LanguageTool-3.3-SNAPSHOT/LanguageTool-3.3-SNAPSHOT/languagetool-commandline.jar'
 
 See section |languagetool-configuration| for more optional settings.
 
@@ -171,12 +167,8 @@ g:languagetool_lang                                      *g:languagetool_lang*
   plugin tries to guess the language of the Vim spelling checker
   'spelllang' or v:lang. If neither works, plugin defaults to
   English US (en-US). Starting with LanguageTool-1.8, regional variants
-  of some languages can be specified. For languages with variants
-  (currently English and German), it is necessary to specify the
-  variant in order for LanguageTool to signal spelling errors.
-  In other words, with  :set spelllang=en  LanguageTool only
-  signals grammar mistakes whereas with  :set spellllang=en_us
-  LanguageTool signals spelling mistakes and grammar mistakes.
+  of some languages can be specified.
+
   The valid language codes are: >
 
     ast    Asturian
@@ -199,21 +191,26 @@ g:languagetool_lang                                      *g:languagetool_lang*
     en-ZA  English (South Africa)
     eo     Esperanto
     es     Spanish
+    fa     Persian
     fr     French
     gl     Galician
     is     Icelandic
     it     Italian
+    ja     Japanese
     km     Khmer
     lt     Lithuanian
     ml     Malayalam
     nl     Dutch
     pl     Polish
     pt     Portuguese
+    pt-BR  Portuguese (Brazil)
+    pt-PT  Portuguese (Portugal)
     ro     Romanian
     ru     Russian
     sk     Slovak
     sl     Slovenian
     sv     Swedish
+    ta     Tamil
     tl     Tagalog
     uk     Ukrainian
     zh     Chinese
@@ -289,16 +286,6 @@ you can disable it by setting |g:languagetool_win_height| to a negative value.
 ============================================================================
 
 7. Bugs                                                   *languagetool-bugs*
-
-Column number reported by LanguageTool indicating the location of the error
-is sometimes incorrect. There is already an opened ticket about this bug:
-
-  http://sourceforge.net/tracker/?func=detail&aid=3054895&group_id=110216&atid=655717
-
-The script currently works around it by doing pattern matching with
-information context but it's not a perfect workaround: it can cause
-spurious highlighting of errors in rare cases. This bug is fixed in
-LanguageTool-1.8.
 
 Please report bugs or suggestions to <dominique.pelle@gmail.com>.
 Alternatively, you can also discuss improvements to this plugin in Wiki

@@ -2,15 +2,15 @@
 " Maintainer:   Dominique Pellé <dominique.pelle@gmail.com>
 " Screenshots:  http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_en.png
 "               http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_fr.png
-" Last Change:  2014/02/20
-" Version:      1.28
+" Last Change:  2016/01/17
+" Version:      1.29
 "
 " Long Description: {{{1
 "
 " This plugin integrates the LanguageTool grammar checker into Vim.
 " Current version of LanguageTool can check grammar in many languages:
-" ast, be, br, ca, da, de, el, en, eo, es, fr, gl, is, it, km, lt, ml, nl,
-" pl, pt, ro, ru, sk, sl, sv, tl, uk, zh.
+" ast, be, br, ca, da, de, el, en, eo, es, fa, fr, gl, is, it, ja, km, lt,
+" ml, nl, pl, pt, ro, ru, sk, sl, sv, ta, tl, uk, zh.
 "
 " See doc/LanguageTool.txt for more details about how to use the
 " LanguageTool plugin.
@@ -37,7 +37,7 @@ function s:FindLanguage(lang) "{{{1
   \  '\=tolower(submatch(1)) . toupper(submatch(2))', ''),
   \  '_', '-', '')
 
-  " All supported languages (with variants) from version LanguageTool-1.8.
+  " All supported languages (with variants) from version LanguageTool.
   let l:supportedLanguages =  {
   \  'ast'   : 1,
   \  'be'    : 1,
@@ -59,21 +59,26 @@ function s:FindLanguage(lang) "{{{1
   \  'en-ZA' : 1,
   \  'eo'    : 1,
   \  'es'    : 1,
+  \  'fa'    : 1,
   \  'fr'    : 1,
   \  'gl'    : 1,
   \  'is'    : 1,
   \  'it'    : 1,
+  \  'ja'    : 1,
   \  'km'    : 1,
   \  'lt'    : 1,
   \  'ml'    : 1,
   \  'nl'    : 1,
   \  'pl'    : 1,
   \  'pt'    : 1,
+  \  'pt-BR' : 1,
+  \  'pt-PT' : 1,
   \  'ro'    : 1,
   \  'ru'    : 1,
   \  'sk'    : 1,
   \  'sl'    : 1,
   \  'sv'    : 1,
+  \  'ta'    : 1,
   \  'tl'    : 1,
   \  'uk'    : 1,
   \  'zh'    : 1
@@ -118,6 +123,7 @@ function s:XmlUnescape(text) "{{{1
   let l:escaped = substitute(l:escaped, '&apos;', "'",  'g')
   let l:escaped = substitute(l:escaped, '&gt;',   '>',  'g')
   let l:escaped = substitute(l:escaped, '&lt;',   '<',  'g')
+  let l:escaped = substitute(l:escaped, '&#x9;',  '	', 'g')
   return          substitute(l:escaped, '&amp;',  '\&', 'g')
 endfunction
 
@@ -159,11 +165,11 @@ function s:LanguageToolSetUp() "{{{1
 
   let s:languagetool_jar = exists("g:languagetool_jar")
   \ ? g:languagetool_jar
-  \ : $HOME . '/languagetool-2.4.1/languagetool-commandline.jar'
+  \ : $HOME . '/languagetool/languagetool-commandline.jar'
 
   if !filereadable(s:languagetool_jar)
     " Hmmm, can't find the jar file.  Try again with expand() in case user
-    " set it up as: let g:languagetool_jar = '$HOME/.../languagetool-commandline.jar'
+    " set it up as: let g:languagetool_jar = '$HOME/languagetool-commandline.jar'
     let l:languagetool_jar = expand(s:languagetool_jar)
     if !filereadable(expand(l:languagetool_jar))
       echomsg "LanguageTool cannot be found at: " . s:languagetool_jar
@@ -239,7 +245,7 @@ function s:LanguageToolCheck(line1, line2) "{{{1
   let l:languagetool_cmd = 'java'
   \ . ' -jar '  . s:languagetool_jar
   \ . ' -c '    . s:languagetool_encoding
-  \ . ' -d '    . s:languagetool_disable_rules
+  \ . (empty(s:languagetool_disable_rules) ? '' : ' -d '.s:languagetool_disable_rules)
   \ . ' -l '    . s:languagetool_lang
   \ . ' --api ' . l:tmpfilename
   \ . ' 2> '    . l:tmperror
@@ -306,7 +312,7 @@ function s:LanguageToolCheck(line1, line2) "{{{1
       call append('$', 'Message:    '     . l:error['msg'])
       call append('$', 'Context:    '     . l:error['context'])
 
-      if l:error['ruleId'] =~ 'HUNSPELL_RULE\|HUNSPELL_NO_SUGGEST_RULE\|MORFOLOGIK_RULE_.*\|GERMAN_SPELLER_RULE'
+      if l:error['ruleId'] =~# 'HUNSPELL_RULE\|HUNSPELL_NO_SUGGEST_RULE\|MORFOLOGIK_RULE_.*\|GERMAN_SPELLER_RULE'
         exe "syn match LanguageToolSpellingError '"
         \ . '\%'  . line('$') . 'l\%9c'
         \ . '.\{' . (4 + l:error['contextoffset']) . '}\zs'
@@ -346,7 +352,7 @@ function s:LanguageToolCheck(line1, line2) "{{{1
     \                                       l:error['context'],
     \                                       l:error['contextoffset'],
     \                                       l:error['errorlength'])
-    if l:error['ruleId'] =~ 'HUNSPELL_RULE\|HUNSPELL_NO_SUGGEST_RULE\|MORFOLOGIK_RULE_.*\|GERMAN_SPELLER_RULE'
+    if l:error['ruleId'] =~# 'HUNSPELL_RULE\|HUNSPELL_NO_SUGGEST_RULE\|MORFOLOGIK_RULE_.*\|GERMAN_SPELLER_RULE'
       exe "syn match LanguageToolSpellingError '" . l:re . "'"
     else
       exe "syn match LanguageToolGrammarError '" . l:re . "'"
@@ -389,7 +395,7 @@ hi def link LanguageToolErrorCount    Title
 hi def link LanguageToolUrl           Underlined
 
 " Section: Menu items {{{1
-if has("gui_running") && has("menu") && &go =~ 'm'
+if has("gui_running") && has("menu") && &go =~# 'm'
   amenu <silent> &Plugin.LanguageTool.Chec&k :LanguageToolCheck<CR>
   amenu <silent> &Plugin.LanguageTool.Clea&r :LanguageToolClear<CR>
 endif
