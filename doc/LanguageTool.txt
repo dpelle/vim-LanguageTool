@@ -2,7 +2,7 @@
 *LanguageTool*
 
 Author:      Dominique Pellé <dominique.pelle@gmail.com>
-Last Change: 17 Jan 2016
+Last Change: 06 Oct 2016
 
 For Vim version 7.0 and above
 
@@ -43,7 +43,7 @@ See http://www.languagetool.org/ for more information about LanguageTool.
 
 ============================================================================
 
-2. Screenshots & Demo                              *languagetool-screenshots*
+2. Screenshots                                     *languagetool-screenshots*
 
 If you don't have time to read help files, these screenshots will give you
 an idea of what the LanguageTool plugin does:
@@ -110,9 +110,9 @@ Download the stand-alone version of LanguageTool (LanguageTool-*.zip)
 from http://www.languagetool.org/, click on "LanguageTool stand-alone
 for your desktop" to download it. Unzip it: >
 
-  $ unzip LanguageTool-3.2.zip
+  $ unzip LanguageTool-3.5.zip
 
-This should extract the file LanguageTool-3.2/languagetool-commandline.jar
+This should extract the file LanguageTool-3.5/languagetool-commandline.jar
 among several other files.
 
 4.2.2 Build LanguageTool from sources in git~
@@ -131,14 +131,14 @@ LanguageTool can then be downloaded and built with Maven as follows: >
 
 After the build, the command line version of LanguageTool can be found in: >
 
-  ./languagetool-standalone/target/LanguageTool-3.3-SNAPSHOT/LanguageTool-3.3-SNAPSHOT/languagetool-commandline.jar
+  ./languagetool-standalone/target/LanguageTool-3.6-SNAPSHOT/LanguageTool-3.6-SNAPSHOT/languagetool-commandline.jar
 
 4.3 Configuring the location of the jar file~
 
 After installing LanguageTool, you must specify the location of the file
 languagetool-commandline.jar in your $HOME/.vimrc file. Example: >
 
-  let g:languagetool_jar='$HOME/languagetool/languagetool-standalone/target/LanguageTool-3.3-SNAPSHOT/LanguageTool-3.3-SNAPSHOT/languagetool-commandline.jar'
+  let g:languagetool_jar='$HOME/languagetool/languagetool-standalone/target/LanguageTool-3.6-SNAPSHOT/LanguageTool-3.6-SNAPSHOT/languagetool-commandline.jar'
 
 See section |languagetool-configuration| for more optional settings.
 
@@ -167,9 +167,12 @@ g:languagetool_lang                                      *g:languagetool_lang*
   plugin tries to guess the language of the Vim spelling checker
   'spelllang' or v:lang. If neither works, plugin defaults to
   English US (en-US). Starting with LanguageTool-1.8, regional variants
-  of some languages can be specified.
-
-  The valid language codes are: >
+  of some languages can be specified. For languages with variants
+  (currently English German and Portuguese), it is necessary to specify the
+  variant in order for LanguageTool to signal spelling errors. In other
+  words, with  :set spelllang=en  LanguageTool only signals grammar
+  mistakes whereas with  :set spellllang=en_us LanguageTool signals
+  spelling mistakes and grammar mistakes. The valid language codes are: >
 
     ast    Asturian
     be     Belarusian
@@ -231,11 +234,12 @@ g:languagetool_win_height                         *g:languagetool_win_height*
 
 You can also customize the following syntax highlighting groups: >
 
+  LanguageToolCmd
+  LanguageToolErrorCount
+  LanguageToolLabel
+  LanguageToolUrl
   LanguageToolGrammarError
   LanguageToolSpellingError
-  LanguageToolCmd
-  LanguageToolLabel
-  LanguageToolErrorCount
 
 ============================================================================
 

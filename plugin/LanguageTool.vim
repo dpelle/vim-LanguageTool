@@ -2,8 +2,8 @@
 " Maintainer:   Dominique Pellé <dominique.pelle@gmail.com>
 " Screenshots:  http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_en.png
 "               http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_fr.png
-" Last Change:  2016/01/17
-" Version:      1.29
+" Last Change:  2016/10/06
+" Version:      1.30
 "
 " Long Description: {{{1
 "
@@ -102,7 +102,7 @@ function s:LanguageToolHighlightRegex(line, context, start, len)  "{{{1
   let l:start_ctx_idx = byteidx(a:context, a:start + a:len)
   let l:end_ctx_idx   = byteidx(a:context, a:start + a:len + 5) - 1
 
-  " The substitute allows to match errors which span multiple lines.
+  " The substitute allows matching errors which span multiple lines.
   " The part after \ze gives a bit of context to avoid spurious
   " highlighting when the text of the error is present multiple
   " times in the line.
@@ -194,19 +194,14 @@ function <sid>JumpToCurrentError() "{{{1
     let l:col  = l:error['fromx']
     let l:rule = l:error['ruleId']
     call setpos('.', l:save_cursor)
-    exe s:languagetool_text_win . 'wincmd w'
+    exe s:languagetool_text_win . ' wincmd w'
     exe 'norm! ' . l:line . 'G0'
+    if l:col > 0
+      exe 'norm! ' . (l:col  - 1) . 'l'
+    endif
 
-    " Finding the column is done using pattern matching with information
-    " in error context.
-    let l:context = l:error['replacements'][byteidx(l:error['replacements'], l:error['context'])
-    \      :byteidx(l:error['replacements'], l:error['context'] + l:error['contextoffset']) - 1]
-    let l:re = s:LanguageToolHighlightRegex(l:error['fromy'], l:error['replacements'],
-    \      l:error['context'], l:error['contextoffset'])
     echon 'Jump to error ' . l:error_idx . '/' . len(s:errors)
-    \ . ' (' . l:rule . ') ...' . l:context . '... @ '
-    \ . l:line . 'L ' . l:col . 'C'
-    call search(l:re)
+    \ . ' (' . l:rule . ') ...@ ' . l:line . 'L ' . l:col . 'C'
     norm! zz
   else
     call setpos('.', l:save_cursor)
@@ -221,12 +216,12 @@ endfunction
 " the range of line to check.
 " Returns 0 if success, < 0 in case of error.
 function s:LanguageToolCheck(line1, line2) "{{{1
-  let l:save_cursor = getpos('.')
   if s:LanguageToolSetUp() < 0
     return -1
   endif
   call s:LanguageToolClear()
 
+  let s:languagetool_text_win = winnr()
   sil %y
   botright new
   let s:languagetool_error_buffer = bufnr('%')
@@ -298,36 +293,33 @@ function s:LanguageToolCheck(line1, line2) "{{{1
     set bt=nofile
     setlocal nospell
     syn clear
-    syn match LanguageToolCmd   '\%1l.*'
-    syn match LanguageToolLabel '^\(Pos\|Rule\|Context\|Message\|Correction\):'
-    syn match LanguageToolLabelMoreInfo '^More info:.*' contains=LanguageToolUrl
-    syn match LanguageToolErrorCount '^Error:\s\+\d\+.\d\+'
-    syn match LanguageToolUrl '^More info:\s*\zs.*' contained
+    call matchadd('LanguageToolCmd',        '\%1l.*')
+    call matchadd('LanguageToolErrorCount', '^Error:\s\+\d\+.\d\+')
+    call matchadd('LanguageToolLabel',      '^\(Context\|Message\|Correction\|URL\):')
+    call matchadd('LanguageToolUrl',        '^URL:\s*\zs.*')
+
     let l:i = 0
     for l:error in s:errors
       call append('$', 'Error:      '
       \ . (l:i + 1) . '/' . len(s:errors)
-      \ . ' ('  . l:error['ruleId'] . ':' . l:error['subId'] . ')'
+      \ . ' '  . l:error['ruleId'] . ((len(l:error['subId']) ==  0) ? '' : ':') . l:error['subId']
       \ . ' @ ' . l:error['fromy'] . 'L ' . l:error['fromx'] . 'C')
       call append('$', 'Message:    '     . l:error['msg'])
-      call append('$', 'Context:    '     . l:error['context'])
-
+      call append('$', 'Context:    ' . l:error['context'])
+      let l:re =
+      \   '\%'  . line('$') . 'l\%9c'
+      \ . '.\{' . (4 + l:error['contextoffset']) . '}\zs'
+      \ . '.\{' .     (l:error['errorlength']) . '}'
       if l:error['ruleId'] =~# 'HUNSPELL_RULE\|HUNSPELL_NO_SUGGEST_RULE\|MORFOLOGIK_RULE_.*\|GERMAN_SPELLER_RULE'
-        exe "syn match LanguageToolSpellingError '"
-        \ . '\%'  . line('$') . 'l\%9c'
-        \ . '.\{' . (4 + l:error['contextoffset']) . '}\zs'
-        \ . '.\{' .     (l:error['errorlength']) . "}'"
+        call matchadd('LanguageToolSpellingError', l:re)
       else
-        exe "syn match LanguageToolGrammarError '"
-        \ . '\%'  . line('$') . 'l\%9c'
-        \ . '.\{' . (4 + l:error['contextoffset']) . '}\zs'
-        \ . '.\{' .     (l:error['errorlength']) . "}'"
+        call matchadd('LanguageToolGrammarError', l:re)
       endif
       if !empty(l:error['replacements'])
         call append('$', 'Correction: ' . l:error['replacements'])
       endif
       if !empty(l:error['url'])
-        call append('$', 'More info:  ' . l:error['url'])
+        call append('$', 'URL:        ' . l:error['url'])
       endif
       call append('$', '')
       let l:i += 1
@@ -343,7 +335,6 @@ function s:LanguageToolCheck(line1, line2) "{{{1
     bd!
     unlet! s:languagetool_error_buffer
   endif
-  let s:languagetool_text_win = winnr()
 
   " Also highlight errors in original buffer and populate location list.
   setlocal errorformat=%f:%l:%c:%m
@@ -353,9 +344,9 @@ function s:LanguageToolCheck(line1, line2) "{{{1
     \                                       l:error['contextoffset'],
     \                                       l:error['errorlength'])
     if l:error['ruleId'] =~# 'HUNSPELL_RULE\|HUNSPELL_NO_SUGGEST_RULE\|MORFOLOGIK_RULE_.*\|GERMAN_SPELLER_RULE'
-      exe "syn match LanguageToolSpellingError '" . l:re . "'"
+      call matchadd('LanguageToolSpellingError', l:re)
     else
-      exe "syn match LanguageToolGrammarError '" . l:re . "'"
+      call matchadd('LanguageToolGrammarError', l:re)
     endif
     laddexpr expand('%') . ':'
     \ . l:error['fromy'] . ':'  . l:error['fromx'] . ':'
@@ -374,12 +365,11 @@ function s:LanguageToolClear() "{{{1
   endif
   if exists('s:languagetool_text_win')
     let l:win = winnr()
-    exe s:languagetool_text_win . 'wincmd w'
-    syn clear LanguageToolGrammarError
-    syn clear LanguageToolSpellingError
+    exe s:languagetool_text_win . ' wincmd w'
+    call setmatches(filter(getmatches(), 'v:val["group"] !~# "LanguageTool.*Error"'))
     lexpr ''
     lclose
-    exe l:win . 'wincmd w'
+    exe l:win . ' wincmd w'
   endif
   unlet! s:languagetool_error_buffer
   unlet! s:languagetool_error_win
@@ -387,14 +377,13 @@ function s:LanguageToolClear() "{{{1
 endfunction
 
 hi def link LanguageToolCmd           Comment
+hi def link LanguageToolErrorCount    Title
 hi def link LanguageToolLabel         Label
-hi def link LanguageToolLabelMoreInfo Label
+hi def link LanguageToolUrl           Underlined
 hi def link LanguageToolGrammarError  Error
 hi def link LanguageToolSpellingError WarningMsg
-hi def link LanguageToolErrorCount    Title
-hi def link LanguageToolUrl           Underlined
 
-" Section: Menu items {{{1
+" Menu items {{{1
 if has("gui_running") && has("menu") && &go =~# 'm'
   amenu <silent> &Plugin.LanguageTool.Chec&k :LanguageToolCheck<CR>
   amenu <silent> &Plugin.LanguageTool.Clea&r :LanguageToolClear<CR>
