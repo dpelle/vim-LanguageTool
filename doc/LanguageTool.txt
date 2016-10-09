@@ -87,6 +87,16 @@ You have to enable plugins by adding these two lines in your |.vimrc| file: >
   set nocompatible
   filetype plugin on
 
+Alternatively, if you prefer to use Vundle or Pathogen plugin managers,
+the plugin is available on github at:
+
+  https://github.com/dpelle/vim-LanguageTool
+
+For example, using Vundle, you can install the plugin by adding
+this line in you ~/.vimrc: >
+
+  Plugin 'dpelle/vim-LanguageTool'
+
 4.2 Installing LanguageTool~
 
 To use this plugin, you need to install the Java LanguageTool program. You
