@@ -237,6 +237,19 @@ function s:LanguageToolCheck(line1, line2) "{{{1
   let l:range = a:line1 . ',' . a:line2
   silent exe l:range . 'w!' . l:tmpfilename
 
+  let l:fts = ['tex']
+  if (executable('detex') && index(l:fts, &filetype) == -1)
+    let l:tmpdetex = tempname()
+    if g:tex_flavor == 'latex'
+      let l:detex_cmd = 'detex -nlc ' . l:tmpfilename . ' > ' . l:tmpdetex
+    else
+      let l:detex_cmd = 'detex -nc ' . l:tmpfilename . ' > ' . l:tmpdetex
+    endif
+    sil exe '%!' . l:detex_cmd
+    call delete(l:tmpfilename)
+    let l:tmpfilename = l:tmpdetex
+  endif
+
   let l:languagetool_cmd = 'java'
   \ . ' -jar '  . s:languagetool_jar
   \ . ' -c '    . s:languagetool_encoding
