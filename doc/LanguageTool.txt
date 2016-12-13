@@ -309,7 +309,19 @@ by clicking on the "Vim wiki" link at the top of the script page:
 
 ============================================================================
 
-8. License                                             *languagetool-license*
+8. Other plugin for grammar checking
+
+Grammalecte is another grammar checker for French.  A plugin for Vim is
+available at:
+
+  https://github.com/dpelle/vim-Grammalecte
+
+Checking text with Grammalecte or LanguageTool can find different errors,
+Installing both plugins is thus recommended.
+
+============================================================================
+
+9. License                                             *languagetool-license*
 
 The VIM LICENSE applies to the LanguageTool.vim plugin (see |copyright|
 except use "LanguageTool.vim" instead of "Vim").

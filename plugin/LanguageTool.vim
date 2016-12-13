@@ -201,7 +201,7 @@ function <sid>JumpToCurrentError() "{{{1
     endif
 
     echon 'Jump to error ' . l:error_idx . '/' . len(s:errors)
-    \ . ' (' . l:rule . ') ...@ ' . l:line . 'L ' . l:col . 'C'
+    \ . ' ' . l:rule . ' @ ' . l:line . 'L ' . l:col . 'C'
     norm! zz
   else
     call setpos('.', l:save_cursor)
@@ -294,14 +294,14 @@ function s:LanguageToolCheck(line1, line2) "{{{1
     setlocal nospell
     syn clear
     call matchadd('LanguageToolCmd',        '\%1l.*')
-    call matchadd('LanguageToolErrorCount', '^Error:\s\+\d\+.\d\+')
+    call matchadd('LanguageToolErrorCount', '^Error:\s\+\d\+/\d\+')
     call matchadd('LanguageToolLabel',      '^\(Context\|Message\|Correction\|URL\):')
     call matchadd('LanguageToolUrl',        '^URL:\s*\zs.*')
 
-    let l:i = 0
+    let l:i = 1
     for l:error in s:errors
       call append('$', 'Error:      '
-      \ . (l:i + 1) . '/' . len(s:errors)
+      \ . l:i . '/' . len(s:errors)
       \ . ' '  . l:error['ruleId'] . ((len(l:error['subId']) ==  0) ? '' : ':') . l:error['subId']
       \ . ' @ ' . l:error['fromy'] . 'L ' . l:error['fromx'] . 'C')
       call append('$', 'Message:    '     . l:error['msg'])
