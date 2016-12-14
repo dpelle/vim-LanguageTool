@@ -234,6 +234,18 @@ g:languagetool_disable_rules                   *g:languagetool_disable_rules*
   rule must be comma separated.
   Default value set by plugin is: WHITESPACE_RULE,EN_QUOTES
 
+g:languagetool_enable_rules                     *g:languagetool_enable_rules*
+
+  This variable specifies checker rules which are enabled.
+
+g:languagetool_disable_categories         *g:languagetool_disable_categories*
+
+  This variable specifies checker rule-categories which are disabled.
+
+g:languagetool_enable_categories           *g:languagetool_enable_categories*
+
+  This variable specifies checker rule-categories which are enabled.
+
 g:languagetool_win_height                         *g:languagetool_win_height*
 
   This variable specifies the height of the scratch window which contains
