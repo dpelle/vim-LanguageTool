@@ -140,6 +140,15 @@ function s:LanguageToolSetUp() "{{{1
   let s:languagetool_disable_rules = exists("g:languagetool_disable_rules")
   \ ? g:languagetool_disable_rules
   \ : 'WHITESPACE_RULE,EN_QUOTES'
+  let s:languagetool_enable_rules = exists("g:languagetool_enable_rules")
+  \ ? g:languagetool_enable_rules
+  \ : ''
+  let s:languagetool_disable_categories = exists("g:languagetool_disable_categories")
+  \ ? g:languagetool_disable_categories
+  \ : ''
+  let s:languagetool_enable_categories = exists("g:languagetool_enable_categories")
+  \ ? g:languagetool_enable_categories
+  \ : ''
   let s:languagetool_win_height = exists("g:languagetool_win_height")
   \ ? g:languagetool_win_height
   \ : 14
@@ -241,6 +250,9 @@ function s:LanguageToolCheck(line1, line2) "{{{1
   \ . ' -jar '  . s:languagetool_jar
   \ . ' -c '    . s:languagetool_encoding
   \ . (empty(s:languagetool_disable_rules) ? '' : ' -d '.s:languagetool_disable_rules)
+  \ . (empty(s:languagetool_enable_rules) ?  '' : ' -e '.s:languagetool_enable_rules)
+  \ . (empty(s:languagetool_disable_categories) ? '' : ' --disablecategories '.s:languagetool_disable_categories)
+  \ . (empty(s:languagetool_enable_categories) ?  '' : ' --enablecategories '.s:languagetool_enable_categories)
   \ . ' -l '    . s:languagetool_lang
   \ . ' --api ' . l:tmpfilename
   \ . ' 2> '    . l:tmperror
