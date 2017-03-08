@@ -2,7 +2,7 @@
 *LanguageTool*
 
 Author:      Dominique Pellé <dominique.pelle@gmail.com>
-Last Change: 06 Oct 2016
+Last Change: 03 Mar 2017
 
 For Vim version 7.0 and above
 
@@ -120,9 +120,9 @@ Download the stand-alone version of LanguageTool (LanguageTool-*.zip)
 from http://www.languagetool.org/, click on "LanguageTool stand-alone
 for your desktop" to download it. Unzip it: >
 
-  $ unzip LanguageTool-3.5.zip
+  $ unzip LanguageTool-3.6.zip
 
-This should extract the file LanguageTool-3.5/languagetool-commandline.jar
+This should extract the file LanguageTool-3.6/languagetool-commandline.jar
 among several other files.
 
 4.2.2 Build LanguageTool from sources in git~
@@ -141,14 +141,14 @@ LanguageTool can then be downloaded and built with Maven as follows: >
 
 After the build, the command line version of LanguageTool can be found in: >
 
-  ./languagetool-standalone/target/LanguageTool-3.6-SNAPSHOT/LanguageTool-3.6-SNAPSHOT/languagetool-commandline.jar
+  ./languagetool-standalone/target/LanguageTool-3.7-SNAPSHOT/LanguageTool-3.7-SNAPSHOT/languagetool-commandline.jar
 
 4.3 Configuring the location of the jar file~
 
 After installing LanguageTool, you must specify the location of the file
 languagetool-commandline.jar in your $HOME/.vimrc file. Example: >
 
-  let g:languagetool_jar='$HOME/languagetool/languagetool-standalone/target/LanguageTool-3.6-SNAPSHOT/LanguageTool-3.6-SNAPSHOT/languagetool-commandline.jar'
+  let g:languagetool_jar='$HOME/languagetool/languagetool-standalone/target/LanguageTool-3.7-SNAPSHOT/LanguageTool-3.7-SNAPSHOT/languagetool-commandline.jar'
 
 See section |languagetool-configuration| for more optional settings.
 
@@ -169,7 +169,7 @@ g:languagetool_jar                                       *g:languagetool_jar*
 
   Example: >
 
-  :let g:languagetool_jar='$HOME/languagetool/languagetool-standalone/target/LanguageTool-2.5-SNAPSHOT/LanguageTool-2.5-SNAPSHOT/languagetool-commandline.jar'
+  :let g:languagetool_jar='$HOME/languagetool/languagetool-standalone/target/LanguageTool-3.7-SNAPSHOT/LanguageTool-3.7-SNAPSHOT/languagetool-commandline.jar'
 
 g:languagetool_lang                                      *g:languagetool_lang*
 

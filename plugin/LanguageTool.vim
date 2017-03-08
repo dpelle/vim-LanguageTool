@@ -2,8 +2,8 @@
 " Maintainer:   Dominique Pellé <dominique.pelle@gmail.com>
 " Screenshots:  http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_en.png
 "               http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_fr.png
-" Last Change:  2016/10/06
-" Version:      1.30
+" Last Change:  2017/03/09
+" Version:      1.31
 "
 " Long Description: {{{1
 "
@@ -203,7 +203,11 @@ function <sid>JumpToCurrentError() "{{{1
     let l:col  = l:error['fromx']
     let l:rule = l:error['ruleId']
     call setpos('.', l:save_cursor)
-    exe s:languagetool_text_win . ' wincmd w'
+    if exists('*win_gotoid')
+      call win_gotoid(s:languagetool_text_winid)
+    else
+      exe s:languagetool_text_winid . ' wincmd w'
+    endif
     exe 'norm! ' . l:line . 'G0'
     if l:col > 0
       exe 'norm! ' . (l:col  - 1) . 'l'
@@ -230,11 +234,14 @@ function s:LanguageToolCheck(line1, line2) "{{{1
   endif
   call s:LanguageToolClear()
 
-  let s:languagetool_text_win = winnr()
+  " Using window ID is more reliable than window number.
+  " But win_getid() does not exist in old version of Vim.
+  let s:languagetool_text_winid = exists('*win_getid')
+  \                             ? win_getid() : winnr()
   sil %y
   botright new
+  set modifiable
   let s:languagetool_error_buffer = bufnr('%')
-  let s:languagetool_error_win    = winnr()
   sil put!
 
   " LanguageTool somehow gives incorrect line/column numbers when
@@ -300,7 +307,7 @@ function s:LanguageToolCheck(line1, line2) "{{{1
   if s:languagetool_win_height >= 0
     " Reformat the output of LanguageTool (XML is not human friendly) and
     " set up syntax highlighting in the buffer which shows all errors.
-    sil %d
+    %d
     call append(0, '# ' . l:languagetool_cmd)
     set bt=nofile
     setlocal nospell
@@ -375,17 +382,22 @@ function s:LanguageToolClear() "{{{1
       sil! exe "bd! " . s:languagetool_error_buffer
     endif
   endif
-  if exists('s:languagetool_text_win')
+  if exists('s:languagetool_text_winid')
     let l:win = winnr()
-    exe s:languagetool_text_win . ' wincmd w'
+    " Using window ID is more reliable than window number.
+    " But win_getid() does not exist in old version of Vim.
+    if exists('*win_gotoid')
+      call win_gotoid(s:languagetool_text_winid)
+    else
+      exe s:languagetool_text_winid . ' wincmd w'
+    endif
     call setmatches(filter(getmatches(), 'v:val["group"] !~# "LanguageTool.*Error"'))
     lexpr ''
     lclose
     exe l:win . ' wincmd w'
   endif
   unlet! s:languagetool_error_buffer
-  unlet! s:languagetool_error_win
-  unlet! s:languagetool_text_win
+  unlet! s:languagetool_text_winid
 endfunction
 
 hi def link LanguageToolCmd           Comment
