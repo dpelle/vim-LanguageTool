@@ -1,8 +1,8 @@
 vim-LanguageTool
 ----------------
 
-This plugin integrates the LanguageTool grammar checker into Vim.  Current
-version of LanguageTool can check grammar in many languages.
+This plugin integrates the LanguageTool grammar checker into Vim.
+The current version of LanguageTool can check grammar in many languages.
 
 See the list of supported languages:
 
@@ -28,8 +28,8 @@ French Language
 * `:LanguageToolCheck`
 
   To check grammar in current buffer.  This will check for grammar mistakes in
-  text of current buffer and highlight the errors. It also opens a new scratch
-  window with the list of grammar errors with further explanations for each
+  the current buffer and highlight grammar or spelling errors. It also opens a
+  new scratch window with the list of errors with further explanations about each
   error.  Pressing <Enter> in scratch buffer will jump to that error. The
   location list for the buffer being checked is also populated.  So you can use
   location commands such as :lopen to open the location list window, :lne to
@@ -49,7 +49,7 @@ French Language
 
 To use this plugin, you need to install the Java LanguageTool program.
 
-### Download the LanguageTool
+### Download LanguageTool
 
 * Official Website
 
@@ -68,19 +68,17 @@ To use this plugin, you need to install the Java LanguageTool program.
 
   Checkout and build the latest LanguageTool from sources in git from https://github.com/languagetool-org/languagetool
 
-Take help from below command to have more details about installing LanguageTool.
-
 ```
 :help languagetool-installation
 ```
 
 ### Installing vim-LanguageTool
 
-You can use any popular vim plugin installar according to your convenience.
+You can use any popular plugin manager according to your convenience.
 
 #### [Vundle](https://github.com/VundleVim/Vundle.vim)
 
-Add below text to your .vimrc file and save:
+Add the text below to your .vimrc file and save:
 
 ```
 Plugin 'reedes/vim-pencil'
@@ -103,6 +101,6 @@ Example:
 ```
 
 let
-g:languagetool_jar='$HOME/languagetool/languagetool-standalone/target/LanguageTool-3.3-SNAPSHOT/LanguageTool-3.3-SNAPSHOT/languagetool-commandline.jar'
+g:languagetool_jar='$HOME/languagetool/languagetool-standalone/target/LanguageTool-3.7-SNAPSHOT/LanguageTool-3.7-SNAPSHOT/languagetool-commandline.jar'
 
 ```
