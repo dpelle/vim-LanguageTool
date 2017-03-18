@@ -35,7 +35,7 @@ LanguageTool. One advantage of the spelling checker of LanguageTool over
 Vim spelling checker, is that it uses the native Hunspell dictionary directly,
 so it works even with the latest Hunspell dictionaries containing features
 not supported by Vim. For example, the latest French Hunspell dictionaries
-from http://www.dicollect.org are not supported by Vim but they work well
+from http://www.dicollecte.org are not supported by Vim but they work well
 with LanguageTool. On the other hand, the Vim native spelling checker is
 faster and better integrated with Vim.
 
