@@ -41,6 +41,10 @@ English
   checked is also populated, so you can use location commands
   such as `:lopen` to open the location list window, `:lne` to
   jump to the next error, etc.
+  The `:LanguageToolCheck` command accepts a range. You can for example check
+  grammar between lines 100 and 200 in buffer with `:100,200LanguageToolCheck`,
+  or check grammar in the visual selection with `:<',>'LanguageToolCheck`.
+  The default range is 1,$ (whole buffer).
 
 * Use `:LanguageToolClear` to remove highlighting of grammar
   mistakes, close the scratch window containing the list of errors,
@@ -109,7 +113,7 @@ for your desktop" to download it. Unzip it:
 This should extract the file LanguageTool-3.6/languagetool-commandline.jar
 among several other files.
 
-## Build LanguageTool from sources in git~
+## Build LanguageTool from sources in git
 
 If you prefer to build LanguageTool yourself from sources, you first need
 to install the pre-requisite packages. On Ubuntu, you need to install the
@@ -231,7 +235,9 @@ value to disable opening the scratch window. You can also make it empty ''
 to let Vim pick a default size.
 Default is: 14
 
-You can also customize the following syntax highlighting groups:
+## Colors
+
+You can customize the following syntax highlighting groups:
 ```
 LanguageToolCmd
 LanguageToolErrorCount
@@ -239,6 +245,14 @@ LanguageToolLabel
 LanguageToolUrl
 LanguageToolGrammarError
 LanguageToolSpellingError
+```
+For example, to highlight grammar mistakes in blue, and spelling mistakes in
+red, with a curly underline in vim GUIs that support it, add this into your
+colorscheme:
+
+```
+hi LanguageToolGrammarError  guisp=blue gui=undercurl guifg=NONE guibg=NONE ctermfg=white ctermbg=blue term=underline cterm=none
+hi LanguageToolSpellingError guisp=red  gui=undercurl guifg=NONE guibg=NONE ctermfg=white ctermbg=red  term=underline cterm=none
 ```
 
 # License

@@ -263,6 +263,15 @@ You can also customize the following syntax highlighting groups: >
   LanguageToolGrammarError
   LanguageToolSpellingError
 
+For example, to highlight grammar errors in blue, and spelling errors in
+red, with a curly underline in vim GUIs that support it, add this into your
+colorscheme:
+
+```
+hi LanguageToolGrammarError  guisp=blue gui=undercurl guifg=NONE guibg=NONE ctermfg=white ctermbg=blue term=underline cterm=none
+hi LanguageToolSpellingError guisp=red  gui=undercurl guifg=NONE guibg=NONE ctermfg=white ctermbg=red  term=underline cterm=none
+```
+
 ============================================================================
 
 6. Features                                           *languagetool-features*
