@@ -2,8 +2,8 @@
 " Maintainer:   Dominique Pellé <dominique.pelle@gmail.com>
 " Screenshots:  http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_en.png
 "               http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_fr.png
-" Last Change:  2017/03/09
-" Version:      1.31
+" Last Change:  2017/12/22
+" Version:      1.32
 "
 " Long Description: {{{1
 "
@@ -329,7 +329,7 @@ function s:LanguageToolCheck(line1, line2) "{{{1
       \   '\%'  . line('$') . 'l\%9c'
       \ . '.\{' . (4 + l:error['contextoffset']) . '}\zs'
       \ . '.\{' .     (l:error['errorlength']) . '}'
-      if l:error['ruleId'] =~# 'HUNSPELL_RULE\|HUNSPELL_NO_SUGGEST_RULE\|MORFOLOGIK_RULE_.*\|GERMAN_SPELLER_RULE'
+      if l:error['ruleId'] =~# 'HUNSPELL_RULE\|HUNSPELL_NO_SUGGEST_RULE\|MORFOLOGIK_RULE_\|_SPELLING_RULE\|_SPELLER_RULE'
         call matchadd('LanguageToolSpellingError', l:re)
       else
         call matchadd('LanguageToolGrammarError', l:re)
@@ -362,7 +362,7 @@ function s:LanguageToolCheck(line1, line2) "{{{1
     \                                       l:error['context'],
     \                                       l:error['contextoffset'],
     \                                       l:error['errorlength'])
-    if l:error['ruleId'] =~# 'HUNSPELL_RULE\|HUNSPELL_NO_SUGGEST_RULE\|MORFOLOGIK_RULE_.*\|GERMAN_SPELLER_RULE'
+    if l:error['ruleId'] =~# 'HUNSPELL_RULE\|HUNSPELL_NO_SUGGEST_RULE\|MORFOLOGIK_RULE_\|_SPELLING_RULE\|_SPELLER_RULE'
       call matchadd('LanguageToolSpellingError', l:re)
     else
       call matchadd('LanguageToolGrammarError', l:re)
