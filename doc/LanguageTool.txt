@@ -131,7 +131,7 @@ If you prefer to build LanguageTool yourself from sources, you first need
 to install the pre-requisite packages. On Ubuntu, you need to install the
 following packages: >
 
-  $ sudo apt-get install openjdk-8-jdk mvn git
+  $ sudo apt-get install openjdk-8-jdk maven git
 
 LanguageTool can then be downloaded and built with Maven as follows: >
 
@@ -141,14 +141,14 @@ LanguageTool can then be downloaded and built with Maven as follows: >
 
 After the build, the command line version of LanguageTool can be found in: >
 
-  ./languagetool-standalone/target/LanguageTool-3.7-SNAPSHOT/LanguageTool-3.7-SNAPSHOT/languagetool-commandline.jar
+  ./languagetool-standalone/target/LanguageTool-4.3-SNAPSHOT/LanguageTool-4.3-SNAPSHOT/languagetool-commandline.jar
 
 4.3 Configuring the location of the jar file~
 
 After installing LanguageTool, you must specify the location of the file
 languagetool-commandline.jar in your $HOME/.vimrc file. Example: >
 
-  let g:languagetool_jar='$HOME/languagetool/languagetool-standalone/target/LanguageTool-3.7-SNAPSHOT/LanguageTool-3.7-SNAPSHOT/languagetool-commandline.jar'
+  let g:languagetool_jar='$HOME/languagetool/languagetool-standalone/target/LanguageTool-4.3-SNAPSHOT/LanguageTool-4.3-SNAPSHOT/languagetool-commandline.jar'
 
 See section |languagetool-configuration| for more optional settings.
 
@@ -169,7 +169,7 @@ g:languagetool_jar                                       *g:languagetool_jar*
 
   Example: >
 
-  :let g:languagetool_jar='$HOME/languagetool/languagetool-standalone/target/LanguageTool-3.7-SNAPSHOT/LanguageTool-3.7-SNAPSHOT/languagetool-commandline.jar'
+  :let g:languagetool_jar='$HOME/languagetool/languagetool-standalone/target/LanguageTool-4.3-SNAPSHOT/LanguageTool-4.3-SNAPSHOT/languagetool-commandline.jar'
 
 g:languagetool_lang                                      *g:languagetool_lang*
 
@@ -207,7 +207,6 @@ g:languagetool_lang                                      *g:languagetool_lang*
     fa     Persian
     fr     French
     gl     Galician
-    is     Icelandic
     it     Italian
     ja     Japanese
     km     Khmer
@@ -222,6 +221,11 @@ g:languagetool_lang                                      *g:languagetool_lang*
     ru     Russian
     sk     Slovak
     sl     Slovenian
+    sr     Serbian
+    sr-BA  Serbian (Bosnia and Herzegovina)
+    sr-HR  Serbian (Croatia)
+    sr-ME  Serbian (Montenegro)
+    sr-RS  Serbian (Serbia)
     sv     Swedish
     ta     Tamil
     tl     Tagalog
