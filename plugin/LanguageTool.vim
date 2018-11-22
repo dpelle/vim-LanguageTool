@@ -176,7 +176,7 @@ function s:LanguageToolSetUp() "{{{1
   \ ? g:languagetool_jar
   \ : $HOME . '/languagetool/languagetool-commandline.jar'
 
-  if !filereadable(s:languagetool_jar)
+  if !exists("g:languagetool_cmd") && !filereadable(s:languagetool_jar)
     " Hmmm, can't find the jar file.  Try again with expand() in case user
     " set it up as: let g:languagetool_jar = '$HOME/languagetool-commandline.jar'
     let l:languagetool_jar = expand(s:languagetool_jar)
@@ -253,8 +253,11 @@ function s:LanguageToolCheck(line1, line2) "{{{1
   let l:range = a:line1 . ',' . a:line2
   silent exe l:range . 'w!' . l:tmpfilename
 
-  let l:languagetool_cmd = 'java'
-  \ . ' -jar '  . s:languagetool_jar
+  let l:languagetool_cmd = exists("g:languagetool_cmd")
+  \ ? g:languagetool_cmd
+  \ : 'java -jar ' . s:languagetool_jar
+
+  let l:languagetool_cmd = l:languagetool_cmd
   \ . ' -c '    . s:languagetool_encoding
   \ . (empty(s:languagetool_disable_rules) ? '' : ' -d '.s:languagetool_disable_rules)
   \ . (empty(s:languagetool_enable_rules) ?  '' : ' -e '.s:languagetool_enable_rules)
