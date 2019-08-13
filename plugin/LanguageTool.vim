@@ -261,11 +261,11 @@ function s:LanguageToolCheck(line1, line2) "{{{1
   \ . (empty(s:languagetool_disable_categories) ? '' : ' --disablecategories '.s:languagetool_disable_categories)
   \ . (empty(s:languagetool_enable_categories) ?  '' : ' --enablecategories '.s:languagetool_enable_categories)
   \ . ' -l '    . s:languagetool_lang
-  \ . ' --api ' . l:tmpfilename
+  \ . ' --json ' . l:tmpfilename
   \ . ' 2> '    . l:tmperror
 
-  sil exe '%!' . l:languagetool_cmd
-  call delete(l:tmpfilename)
+  " Let json magic happen
+  let output = json_decode(system(l:languagetool_cmd))
 
   if v:shell_error
     echoerr 'Command [' . l:languagetool_cmd . '] failed with error: '
@@ -279,33 +279,24 @@ function s:LanguageToolCheck(line1, line2) "{{{1
   endif
   call delete(l:tmperror)
 
-  " Loop on all errors in XML output of LanguageTool and
+  " Loop on all errors in output of LanguageTool and
   " collect information about all errors in list s:errors
-  let s:errors = []
-  while search('^<error ', 'eW') > 0
-    let l:l = getline('.')
-    " The fromx and tox given by LanguageTool are not reliable.
-    " They are even sometimes negative!
-
-    let l:error= {}
-    for l:k in [ 'fromy', 'fromx', 'tox', 'toy',
-    \            'ruleId', 'subId', 'msg', 'replacements',
-    \            'context', 'contextoffset', 'errorlength', 'url' ]
-      let l:error[l:k] = s:ParseKeyValue(l:k, l:l)
-    endfor
-
-    " Make line/column number start at 1 rather than 0.
+  let s:errors = output.matches
+  for l:error in s:errors
+    " {from|to}{x|y} are not provided by LT JSON API, thus we have to compute them
     " Make also line number absolute as in buffer.
-    let l:error['fromy'] += a:line1
-    let l:error['fromx'] += 1
-    let l:error['toy']   += a:line1
-    let l:error['tox']   += 1
+    let l:start_byte_index = byteidx(system("cat " . expand(l:tmpfilename)), l:error.offset) + 1
+    let l:error.fromy = byte2line(l:start_byte_index) + a:line1 - 1
+    let l:error.fromx = l:start_byte_index - line2byte(l:error.fromy) + 1
 
-    call add(s:errors, l:error)
-  endwhile
+    let l:stop_byte_index = byteidx(system("cat " . expand(l:tmpfilename)), l:error.offset + l:error.length - 1) + 1
+    let l:error.toy = byte2line(l:stop_byte_index) + a:line1 - 1
+    let l:error.tox = l:stop_byte_index - line2byte(l:error.toy) + 1
+  endfor
+  call delete(l:tmpfilename)
 
   if s:languagetool_win_height >= 0
-    " Reformat the output of LanguageTool (XML is not human friendly) and
+    " Reformat the output of LanguageTool (JSON is not human friendly) and
     " set up syntax highlighting in the buffer which shows all errors.
     %d
     call append(0, '# ' . l:languagetool_cmd)
@@ -321,24 +312,24 @@ function s:LanguageToolCheck(line1, line2) "{{{1
     for l:error in s:errors
       call append('$', 'Error:      '
       \ . l:i . '/' . len(s:errors)
-      \ . ' '  . l:error['ruleId'] . ((len(l:error['subId']) ==  0) ? '' : ':') . l:error['subId']
-      \ . ' @ ' . l:error['fromy'] . 'L ' . l:error['fromx'] . 'C')
-      call append('$', 'Message:    '     . l:error['msg'])
-      call append('$', 'Context:    ' . l:error['context'])
+      \ . ' '  . l:error.rule.id . ((len(l:error.rule.category.id) ==  0) ? '' : ':') . l:error.rule.category.id
+      \ . ' @ ' . l:error.fromy . 'L ' . l:error.fromx . 'C')
+      call append('$', 'Message:    '     . l:error.message)
+      call append('$', 'Context:    ' . l:error.context.text)
       let l:re =
       \   '\%'  . line('$') . 'l\%9c'
-      \ . '.\{' . (4 + l:error['contextoffset']) . '}\zs'
-      \ . '.\{' .     (l:error['errorlength']) . '}'
-      if l:error['ruleId'] =~# 'HUNSPELL_RULE\|HUNSPELL_NO_SUGGEST_RULE\|MORFOLOGIK_RULE_\|_SPELLING_RULE\|_SPELLER_RULE'
+      \ . '.\{' . (4 + l:error.context.offset) . '}\zs'
+      \ . '.\{' .     (l:error.context.length) . '}'
+      if l:error.rule.id =~# 'HUNSPELL_RULE\|HUNSPELL_NO_SUGGEST_RULE\|MORFOLOGIK_RULE_\|_SPELLING_RULE\|_SPELLER_RULE'
         call matchadd('LanguageToolSpellingError', l:re)
       else
         call matchadd('LanguageToolGrammarError', l:re)
       endif
-      if !empty(l:error['replacements'])
-        call append('$', 'Correction: ' . l:error['replacements'])
+      if !empty(l:error.replacements)
+        call append('$', 'Correction: ' . l:error.replacements)
       endif
-      if !empty(l:error['url'])
-        call append('$', 'URL:        ' . l:error['url'])
+      if !empty(l:error.rule.urls)
+        call append('$', 'URL:        ' . l:error.rule.urls)
       endif
       call append('$', '')
       let l:i += 1
@@ -358,18 +349,18 @@ function s:LanguageToolCheck(line1, line2) "{{{1
   " Also highlight errors in original buffer and populate location list.
   setlocal errorformat=%f:%l:%c:%m
   for l:error in s:errors
-    let l:re = s:LanguageToolHighlightRegex(l:error['fromy'],
-    \                                       l:error['context'],
-    \                                       l:error['contextoffset'],
-    \                                       l:error['errorlength'])
-    if l:error['ruleId'] =~# 'HUNSPELL_RULE\|HUNSPELL_NO_SUGGEST_RULE\|MORFOLOGIK_RULE_\|_SPELLING_RULE\|_SPELLER_RULE'
+    let l:re = s:LanguageToolHighlightRegex(l:error.fromy,
+    \                                       l:error.context.text,
+    \                                       l:error.context.offset,
+    \                                       l:error.context.length)
+    if l:error.rule.id =~# 'HUNSPELL_RULE\|HUNSPELL_NO_SUGGEST_RULE\|MORFOLOGIK_RULE_\|_SPELLING_RULE\|_SPELLER_RULE'
       call matchadd('LanguageToolSpellingError', l:re)
     else
       call matchadd('LanguageToolGrammarError', l:re)
     endif
     laddexpr expand('%') . ':'
-    \ . l:error['fromy'] . ':'  . l:error['fromx'] . ':'
-    \ . l:error['ruleId'] . ' ' . l:error['msg']
+    \ . l:error.fromy . ':'  . l:error.fromx . ':'
+    \ . l:error.rule.id . ' ' . l:error.message
   endfor
   return 0
 endfunction
