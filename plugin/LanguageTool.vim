@@ -113,27 +113,6 @@ function s:LanguageToolHighlightRegex(line, context, start, len)  "{{{1
   \     . substitute(escape(a:context[l:start_ctx_idx : l:end_ctx_idx], "'\\"), ' ', '\\_\\s', 'g')
 endfunction
 
-" Unescape XML special characters in a:text.
-function s:XmlUnescape(text) "{{{1
-  " Change XML escape char such as &quot; into "
-  " Substitution of &amp; must be done last or else something
-  " like &amp;quot; would get first transformed into &quot;
-  " and then wrongly transformed into "  (correct is &quot;)
-  let l:escaped = substitute(a:text,    '&quot;', '"',  'g')
-  let l:escaped = substitute(l:escaped, '&apos;', "'",  'g')
-  let l:escaped = substitute(l:escaped, '&gt;',   '>',  'g')
-  let l:escaped = substitute(l:escaped, '&lt;',   '<',  'g')
-  let l:escaped = substitute(l:escaped, '&#x9;',  '	', 'g')
-  return          substitute(l:escaped, '&amp;',  '\&', 'g')
-endfunction
-
-" Parse a xml attribute such as: ruleId="FOO" in line a:line.
-" where ruleId is the key a:key, and FOO is the returned value corresponding
-" to that key.
-function s:ParseKeyValue(key, line) "{{{1
-  return s:XmlUnescape(matchstr(a:line, '\<' . a:key . '="\zs[^"]*\ze"'))
-endfunction
-
 " Set up configuration.
 " Returns 0 if success, < 0 in case of error.
 function s:LanguageToolSetUp() "{{{1
