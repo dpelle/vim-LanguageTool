@@ -132,6 +132,7 @@ function s:LanguageToolSetUp() "{{{1
   \ ? g:languagetool_win_height
   \ : 14
   let s:languagetool_encoding = &fenc ? &fenc : &enc
+  let s:lt_server_started = exists('s:lt_server_started') ? s:lt_server_started : 0
 
   " Setting up language...
   if exists("g:languagetool_lang")
@@ -167,6 +168,35 @@ function s:LanguageToolSetUp() "{{{1
     endif
     let s:languagetool_jar = l:languagetool_jar
   endif
+
+  let s:languagetool_server = exists("g:languagetool_server")
+  \ ? g:languagetool_server
+  \ : $HOME . '/languagetool/languagetool-server.jar'
+
+  if !filereadable(s:languagetool_server)
+    " Hmmm, can't find the server file.  Try again with expand() in case user
+    " set it up as: let g:languagetool_server = '$HOME/languagetool-server.jar
+    let l:languagetool_server = expand(s:languagetool_server)
+    if !filereadable(expand(l:languagetool_server))
+      echomsg "LanguageTool cannot be found at: " . s:languagetool_server
+      echomsg "You need to install LanguageTool and/or set up g:languagetool_server"
+      echomsg "to indicate the location of the languagetool-commandline.server file."
+      return -1
+    endif
+    let s:languagetool_server = l:languagetool_server
+  endif
+
+  let s:languagetool_port = exists("g:languagetool_port")
+              \ ? g:languagetool_port
+              \ : 8081
+
+  " Start the server
+  if !exists('s:languagetool_job')
+      let s:languagetool_job = jobstart('java -cp '
+                  \ . s:languagetool_server . ' org.languagetool.server.HTTPServer --port '
+                  \ . s:languagetool_port,
+                  \ {'on_stdout': function('s:ServerStdoutHandler')})
+  endif
   return 0
 endfunction
 
@@ -200,6 +230,13 @@ function <sid>JumpToCurrentError() "{{{1
   endif
 endfunction
 
+function s:ServerStdoutHandler(job_id, stdout, event) "{{{1
+    if string(a:stdout) =~? 'Server started'
+        echomsg 'LanguageTool server started'
+        let s:lt_server_started = 1
+    endif
+endfunction
+
 " This function performs grammar checking of text in the current buffer.
 " It highlights grammar mistakes in current buffer and opens a scratch
 " window with all errors found.  It also populates the location-list of
@@ -207,9 +244,10 @@ endfunction
 " a:line1 and a:line2 parameters are the first and last line number of
 " the range of line to check.
 " Returns 0 if success, < 0 in case of error.
-function s:LanguageToolCheck(line1, line2) "{{{1
-  if s:LanguageToolSetUp() < 0
-    return -1
+function s:LanguageToolCheck() "{{{1
+  if !exists('s:lt_server_started')
+        echomsg 'LanguageTool needs to be initialized, call :LanguageToolSetUp'
+        return -1
   endif
   call s:LanguageToolClear()
 
@@ -217,20 +255,11 @@ function s:LanguageToolCheck(line1, line2) "{{{1
   " But win_getid() does not exist in old version of Vim.
   let s:languagetool_text_winid = exists('*win_getid')
   \                             ? win_getid() : winnr()
-  sil %y
-  botright new
-  set modifiable
-  let s:languagetool_error_buffer = bufnr('%')
-  sil put!
 
   " LanguageTool somehow gives incorrect line/column numbers when
   " reading from stdin so we need to use a temporary file to get
   " correct results.
-  let l:tmpfilename = tempname()
-  let l:tmperror    = tempname()
-
-  let l:range = a:line1 . ',' . a:line2
-  silent exe l:range . 'w!' . l:tmpfilename
+  let l:tmperror = tempname()
 
   let l:languagetool_cmd = 'java'
   \ . ' -jar '  . s:languagetool_jar
@@ -240,11 +269,29 @@ function s:LanguageToolCheck(line1, line2) "{{{1
   \ . (empty(s:languagetool_disable_categories) ? '' : ' --disablecategories '.s:languagetool_disable_categories)
   \ . (empty(s:languagetool_enable_categories) ?  '' : ' --enablecategories '.s:languagetool_enable_categories)
   \ . ' -l '    . s:languagetool_lang
-  \ . ' --json ' . l:tmpfilename
+  \ . ' --json '
   \ . ' 2> '    . l:tmperror
 
+  let l:languagetool_cmd = 'curl -X POST -s'
+              \ . ' --header "Content-Type: application/x-www-form-urlencoded"'
+              \ . ' --header "Accept: application/json"'
+              \ . (empty(s:languagetool_disable_rules) ? '' : ' --data-urlencode "disabledRules='.s:languagetool_disable_rules.'"')
+              \ . (empty(s:languagetool_enable_rules) ?  '' : ' --data-urlencode "enabledRules='.s:languagetool_enable_rules.'"')
+              \ . (empty(s:languagetool_disable_categories) ? '' : ' --data-urlencode "disabledCategories='.s:languagetool_disable_categories.'"')
+              \ . (empty(s:languagetool_enable_categories) ?  '' : ' --data-urlencode "enablecategories='.s:languagetool_enable_categories.'"')
+              \ . ' --data-urlencode "language=' . s:languagetool_lang . '"'
+              \ . ' --data-urlencode "text=' . escape(system('cat ' . expand('%')), '"\') . '"'
+              \ . ' http://localhost:' . s:languagetool_port . '/v2/check'
+              \ . ' 2> ' . l:tmperror
+
   " Let json magic happen
-  let output = json_decode(system(l:languagetool_cmd))
+  if s:lt_server_started
+      let output_str = system(l:languagetool_cmd)
+  else
+      echomsg 'LanguageTool server offline...'
+      return -1
+  endif
+  let output = json_decode(output_str)
 
   if v:shell_error
     echoerr 'Command [' . l:languagetool_cmd . '] failed with error: '
@@ -262,68 +309,67 @@ function s:LanguageToolCheck(line1, line2) "{{{1
   " collect information about all errors in list s:errors
   let s:errors = output.matches
   for l:error in s:errors
+    " There be dragons, this is true blackmagic happening here, we hardpatch offset field of LT
     " {from|to}{x|y} are not provided by LT JSON API, thus we have to compute them
     " Make also line number absolute as in buffer.
-    let l:start_byte_index = byteidx(system("cat " . expand(l:tmpfilename)), l:error.offset) + 1
-    let l:error.fromy = byte2line(l:start_byte_index) + a:line1 - 1
-    let l:error.fromx = l:start_byte_index - line2byte(l:error.fromy) + 1
+    let l:start_byte_index = byteidxcomp(system("cat " . expand('%')), l:error.offset) + 2 " All errrors are offsetted by 2
+    let l:error.fromy = byte2line(l:start_byte_index)
+    let l:error.fromx = l:start_byte_index - line2byte(l:error.fromy)
 
-    let l:stop_byte_index = byteidx(system("cat " . expand(l:tmpfilename)), l:error.offset + l:error.length - 1) + 1
-    let l:error.toy = byte2line(l:stop_byte_index) + a:line1 - 1
-    let l:error.tox = l:stop_byte_index - line2byte(l:error.toy) + 1
+    let l:stop_byte_index = byteidxcomp(system("cat " . expand('%')), l:error.offset + l:error.length) + 2
+    let l:error.toy = byte2line(l:stop_byte_index)
+    let l:error.tox = l:stop_byte_index - line2byte(l:error.toy)
   endfor
-  call delete(l:tmpfilename)
 
-  if s:languagetool_win_height >= 0
-    " Reformat the output of LanguageTool (JSON is not human friendly) and
-    " set up syntax highlighting in the buffer which shows all errors.
-    %d
-    call append(0, '# ' . l:languagetool_cmd)
-    set bt=nofile
-    setlocal nospell
-    syn clear
-    call matchadd('LanguageToolCmd',        '\%1l.*')
-    call matchadd('LanguageToolErrorCount', '^Error:\s\+\d\+/\d\+')
-    call matchadd('LanguageToolLabel',      '^\(Context\|Message\|Correction\|URL\):')
-    call matchadd('LanguageToolUrl',        '^URL:\s*\zs.*')
+  " if s:languagetool_win_height >= 0
+  "   " Reformat the output of LanguageTool (JSON is not human friendly) and
+  "   " set up syntax highlighting in the buffer which shows all errors.
+  "   call append(0, '# ' . l:languagetool_cmd)
+  "   set bt=nofile
+  "   setlocal nospell
+  "   syn clear
+  "   call matchadd('LanguageToolCmd',        '\%1l.*')
+  "   call matchadd('LanguageToolErrorCount', '^Error:\s\+\d\+/\d\+')
+  "   call matchadd('LanguageToolLabel',      '^\(Context\|Message\|Correction\|URL\):')
+  "   call matchadd('LanguageToolUrl',        '^URL:\s*\zs.*')
 
-    let l:i = 1
-    for l:error in s:errors
-      call append('$', 'Error:      '
-      \ . l:i . '/' . len(s:errors)
-      \ . ' '  . l:error.rule.id . ((len(l:error.rule.category.id) ==  0) ? '' : ':') . l:error.rule.category.id
-      \ . ' @ ' . l:error.fromy . 'L ' . l:error.fromx . 'C')
-      call append('$', 'Message:    '     . l:error.message)
-      call append('$', 'Context:    ' . l:error.context.text)
-      let l:re =
-      \   '\%'  . line('$') . 'l\%9c'
-      \ . '.\{' . (4 + l:error.context.offset) . '}\zs'
-      \ . '.\{' .     (l:error.context.length) . '}'
-      if l:error.rule.id =~# 'HUNSPELL_RULE\|HUNSPELL_NO_SUGGEST_RULE\|MORFOLOGIK_RULE_\|_SPELLING_RULE\|_SPELLER_RULE'
-        call matchadd('LanguageToolSpellingError', l:re)
-      else
-        call matchadd('LanguageToolGrammarError', l:re)
-      endif
-      if !empty(l:error.replacements)
-        call append('$', 'Correction: ' . l:error.replacements)
-      endif
-      if !empty(l:error.rule.urls)
-        call append('$', 'URL:        ' . l:error.rule.urls)
-      endif
-      call append('$', '')
-      let l:i += 1
-    endfor
-    exe "norm! z" . s:languagetool_win_height . "\<CR>"
-    0
-    map <silent> <buffer> <CR> :call <sid>JumpToCurrentError()<CR>
-    redraw
-    echon 'Press <Enter> on error in scratch buffer to jump its location'
-    exe "norm! \<C-W>\<C-P>"
-  else
-    " Negative s:languagetool_win_height -> no scratch window.
-    bd!
-    unlet! s:languagetool_error_buffer
-  endif
+  "   let l:i = 1
+  "   for l:error in s:errors
+  "     call append('$', 'Error:      '
+  "     \ . l:i . '/' . len(s:errors)
+  "     \ . ' '  . l:error.rule.id . ((len(l:error.rule.category.id) ==  0) ? '' : ':') . l:error.rule.category.id
+  "     \ . ' @ ' . l:error.fromy . 'L ' . l:error.fromx . 'C')
+  "     call append('$', 'Message:    '     . l:error.message)
+  "     call append('$', 'Context:    ' . l:error.context.text)
+  "     let l:re =
+  "     \   '\%'  . line('$') . 'l\%9c'
+  "     \ . '.\{' . (4 + l:error.context.offset) . '}\zs'
+  "     \ . '.\{' .     (l:error.context.length) . '}'
+  "     if l:error.rule.id =~# 'HUNSPELL_RULE\|HUNSPELL_NO_SUGGEST_RULE\|MORFOLOGIK_RULE_\|_SPELLING_RULE\|_SPELLER_RULE'
+  "       call matchadd('LanguageToolSpellingError', l:re)
+  "     else
+  "       call matchadd('LanguageToolGrammarError', l:re)
+  "     endif
+  "     if !empty(l:error.replacements)
+  "       call append('$', 'Correction: ' . l:error.replacements)
+  "     endif
+  "     if !empty(l:error.rule.urls)
+  "       call append('$', 'URL:        ' . l:error.rule.urls)
+  "     endif
+  "     call append('$', '')
+  "     let l:i += 1
+  "   endfor
+  "   exe "norm! z" . s:languagetool_win_height . "\<CR>"
+  "   0
+  "   map <silent> <buffer> <CR> :call <sid>JumpToCurrentError()<CR>
+  "   redraw
+  "   echon 'Press <Enter> on error in scratch buffer to jump its location'
+  "   exe "norm! \<C-W>\<C-P>"
+  " else
+  "   " Negative s:languagetool_win_height -> no scratch window.
+  "   bd!
+  "   unlet! s:languagetool_error_buffer
+  " endif
 
   " Also highlight errors in original buffer and populate location list.
   setlocal errorformat=%f:%l:%c:%m
@@ -370,12 +416,19 @@ function s:LanguageToolClear() "{{{1
   unlet! s:languagetool_text_winid
 endfunction
 
+function LanguageToolExit()
+    if exists('s:languagetool_job')
+        jobstop(s:languagetool_job)
+    endif
+endfunction
+
 hi def link LanguageToolCmd           Comment
 hi def link LanguageToolErrorCount    Title
 hi def link LanguageToolLabel         Label
 hi def link LanguageToolUrl           Underlined
 hi def link LanguageToolGrammarError  Error
 hi def link LanguageToolSpellingError WarningMsg
+
 
 " Menu items {{{1
 if has("gui_running") && has("menu") && &go =~# 'm'
@@ -385,6 +438,7 @@ endif
 
 " Defines commands {{{1
 com! -nargs=0          LanguageToolClear :call s:LanguageToolClear()
-com! -nargs=0 -range=% LanguageToolCheck :call s:LanguageToolCheck(<line1>,
-                                                                 \ <line2>)
+com! -nargs=0 LanguageToolCheck :call s:LanguageToolCheck()
+com! -nargs=0 LanguageToolSetUp :call s:LanguageToolSetUp()
+autocmd VimLeave * call s:LanguageToolExit()
 " vim: fdm=marker
