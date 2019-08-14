@@ -321,56 +321,6 @@ function s:LanguageToolCheck() "{{{1
     let l:error.tox = l:stop_byte_index - line2byte(l:error.toy)
   endfor
 
-  " if s:languagetool_win_height >= 0
-  "   " Reformat the output of LanguageTool (JSON is not human friendly) and
-  "   " set up syntax highlighting in the buffer which shows all errors.
-  "   call append(0, '# ' . l:languagetool_cmd)
-  "   set bt=nofile
-  "   setlocal nospell
-  "   syn clear
-  "   call matchadd('LanguageToolCmd',        '\%1l.*')
-  "   call matchadd('LanguageToolErrorCount', '^Error:\s\+\d\+/\d\+')
-  "   call matchadd('LanguageToolLabel',      '^\(Context\|Message\|Correction\|URL\):')
-  "   call matchadd('LanguageToolUrl',        '^URL:\s*\zs.*')
-
-  "   let l:i = 1
-  "   for l:error in s:errors
-  "     call append('$', 'Error:      '
-  "     \ . l:i . '/' . len(s:errors)
-  "     \ . ' '  . l:error.rule.id . ((len(l:error.rule.category.id) ==  0) ? '' : ':') . l:error.rule.category.id
-  "     \ . ' @ ' . l:error.fromy . 'L ' . l:error.fromx . 'C')
-  "     call append('$', 'Message:    '     . l:error.message)
-  "     call append('$', 'Context:    ' . l:error.context.text)
-  "     let l:re =
-  "     \   '\%'  . line('$') . 'l\%9c'
-  "     \ . '.\{' . (4 + l:error.context.offset) . '}\zs'
-  "     \ . '.\{' .     (l:error.context.length) . '}'
-  "     if l:error.rule.id =~# 'HUNSPELL_RULE\|HUNSPELL_NO_SUGGEST_RULE\|MORFOLOGIK_RULE_\|_SPELLING_RULE\|_SPELLER_RULE'
-  "       call matchadd('LanguageToolSpellingError', l:re)
-  "     else
-  "       call matchadd('LanguageToolGrammarError', l:re)
-  "     endif
-  "     if !empty(l:error.replacements)
-  "       call append('$', 'Correction: ' . l:error.replacements)
-  "     endif
-  "     if !empty(l:error.rule.urls)
-  "       call append('$', 'URL:        ' . l:error.rule.urls)
-  "     endif
-  "     call append('$', '')
-  "     let l:i += 1
-  "   endfor
-  "   exe "norm! z" . s:languagetool_win_height . "\<CR>"
-  "   0
-  "   map <silent> <buffer> <CR> :call <sid>JumpToCurrentError()<CR>
-  "   redraw
-  "   echon 'Press <Enter> on error in scratch buffer to jump its location'
-  "   exe "norm! \<C-W>\<C-P>"
-  " else
-  "   " Negative s:languagetool_win_height -> no scratch window.
-  "   bd!
-  "   unlet! s:languagetool_error_buffer
-  " endif
-
   " Also highlight errors in original buffer and populate location list.
   setlocal errorformat=%f:%l:%c:%m
   for l:error in s:errors
