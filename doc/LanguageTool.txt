@@ -2,9 +2,9 @@
 *LanguageTool*
 
 Author:      Dominique Pellé <dominique.pelle@gmail.com>
-Last Change: 03 Mar 2017
+Last Change: 2019 Aug 30
 
-For Vim version 7.0 and above
+For Vim version 8.0 and above
 
 ============================================================================
 
@@ -40,6 +40,8 @@ with LanguageTool. On the other hand, the Vim native spelling checker is
 faster and better integrated with Vim.
 
 See http://www.languagetool.org/ for more information about LanguageTool.
+
+This plugin requieres `curl` to work.
 
 ============================================================================
 
@@ -141,14 +143,14 @@ LanguageTool can then be downloaded and built with Maven as follows: >
 
 After the build, the command line version of LanguageTool can be found in: >
 
-  ./languagetool-standalone/target/LanguageTool-4.3-SNAPSHOT/LanguageTool-4.3-SNAPSHOT/languagetool-commandline.jar
+  ./languagetool-standalone/target/LanguageTool-4.3-SNAPSHOT/LanguageTool-4.3-SNAPSHOT/languagetool-server.jar
 
 4.3 Configuring the location of the jar file~
 
 After installing LanguageTool, you must specify the location of the file
-languagetool-commandline.jar in your $HOME/.vimrc file. Example: >
+languagetool-server.jar in your $HOME/.vimrc file. Example: >
 
-  let g:languagetool_jar='$HOME/languagetool/languagetool-standalone/target/LanguageTool-4.3-SNAPSHOT/LanguageTool-4.3-SNAPSHOT/languagetool-commandline.jar'
+  let g:languagetool_server='$HOME/languagetool/languagetool-standalone/target/LanguageTool-4.3-SNAPSHOT/LanguageTool-4.3-SNAPSHOT/languagetool-server.jar'
 
 See section |languagetool-configuration| for more optional settings.
 
@@ -162,16 +164,21 @@ the 'enc' option if 'fenc' is empty.
 Several global variables can be set in your |vimrc| to configure the behavior
 of the LanguageTool plugin.
 
-g:languagetool_jar                                       *g:languagetool_jar*
+g:languagetool_server                                 *g:languagetool_server*
 
   This variable specifies the location of the LanguageTool java grammar
-  checker program. Default is empty.
+  checker server. Default is `$HOME/languagetool/languagetool-server.jar`.
 
   Example: >
 
-  :let g:languagetool_jar='$HOME/languagetool/languagetool-standalone/target/LanguageTool-4.3-SNAPSHOT/LanguageTool-4.3-SNAPSHOT/languagetool-commandline.jar'
+  :let g:languagetool_jar='$HOME/languagetool/languagetool-standalone/target/LanguageTool-4.3-SNAPSHOT/LanguageTool-4.3-SNAPSHOT/languagetool-server.jar'
 
-g:languagetool_lang                                      *g:languagetool_lang*
+g:languagetool_port
+
+  This variable specifies the port that will be used by the server.
+  Default value is `8081`.
+
+g:languagetool_lang                                     *g:languagetool_lang*
 
   The language code to use for the language tool checker. If undefined,
   plugin tries to guess the language of the Vim spelling checker
@@ -250,14 +257,6 @@ g:languagetool_enable_categories           *g:languagetool_enable_categories*
 
   This variable specifies checker rule-categories which are enabled.
 
-g:languagetool_win_height                         *g:languagetool_win_height*
-
-  This variable specifies the height of the scratch window which contains
-  all grammatical mistakes with some explanations. You can use a negative
-  value to disable opening the scratch window. You can also make it empty ''
-  to let Vim pick a default size.
-  Default is: 14
-
 You can also customize the following syntax highlighting groups: >
 
   LanguageToolCmd
@@ -280,20 +279,23 @@ hi LanguageToolSpellingError guisp=red  gui=undercurl guifg=NONE guibg=NONE cter
 
 6. Features                                           *languagetool-features*
 
-The LanguageTool plugin defines 2 commands |:LanguageToolCheck| and
-|:LanguageToolClean|.
+The LanguageTool plugin defines 4 commands : 
+    |:LanguageToolCheck|
+    |:LanguageToolClean|
+    |:LanguageToolSetUp|
+    |:LanguageToolErrorAtPoint|
+
+:LanguageToolSetUp                                       *:LanguageToolSetUp*
+
+Use this command to run LanguageTool server. It is required to run this
+command before running |:LanguageToolCheck|.
 
 :LanguageToolCheck                                       *:LanguageToolCheck*
 
 Use the |:LanguageToolCheck| command to check the grammar in the current
-buffer. This will highlight errors in the buffer. It will also open a new
-scratch window with the list of grammar mistakes with further explanations
-for each error. It also populates the location-list for the window.
-
-The |:LanguageToolCheck| command accepts a range. You can for example check
-grammar between lines 100 and 200 in buffer with :100,200LanguageToolCheck,
-check grammar in the visual selection with :<',>'LanguageToolCheck, etc.
-The default range is 1,$ (whole buffer).
+buffer. This will highlight errors in the buffer and populate the
+location-list for the window.
+Befor running this command you need to run |:LanguageToolSetUp|
 
 :LanguageToolClear                                       *:LanguageToolClear*
 
@@ -306,21 +308,16 @@ The two commands are also available from the menu in gvim: >
   Plugin -> LanguageTool -> Check
                          -> Clear
 
-Using the error scratch window~
+:LanguageToolErrorAtPoint
 
-Pressing <Enter> on an error in the error scratch buffer will jump to that
-error.
+This command opens more informations on the error at point in the preview
+window.
 
 Using the Location-list~
 
 The |location-list| is populated when running |:LanguageToolCheck|. So you can
 use location-list Vim commands such as |:lopen| to open the location-list
 window, |:lne| to jump to the next error, etc.
-
-The error scratch window may seem redundant with the location-list, but the
-scratch window is more flexible to present errors in a nice way. If you do
-not wish to popup the error scratch window, but use the location-list only,
-you can disable it by setting |g:languagetool_win_height| to a negative value.
 
 ============================================================================
 
