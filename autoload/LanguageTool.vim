@@ -247,8 +247,8 @@ function LanguageTool#check() "{{{1
 
   " Loop on all errors in output of LanguageTool and
   " collect information about all errors in list s:errors
-  let s:errors = output.matches
-  for l:error in s:errors
+  let b:errors = output.matches
+  for l:error in b:errors
     " There be dragons, this is true blackmagic happening here, we hardpatch offset field of LT
     " {from|to}{x|y} are not provided by LT JSON API, thus we have to compute them
     let l:start_byte_index = byteidxcomp(l:file_content, l:error.offset) + 2 " All errrors are offsetted by 2
@@ -262,7 +262,7 @@ function LanguageTool#check() "{{{1
 
   " Also highlight errors in original buffer and populate location list.
   setlocal errorformat=%f:%l:%c:%m
-  for l:error in s:errors
+  for l:error in b:errors
     let l:re = s:LanguageToolHighlightRegex(l:error.fromy,
     \                                       l:error.context.text,
     \                                       l:error.context.offset,
