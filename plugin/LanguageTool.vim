@@ -21,15 +21,16 @@
 "
 " The VIM LICENSE applies to LanguageTool.vim plugin
 " (see ":help copyright" except use "LanguageTool.vim" instead of "Vim").
-"
+
+
 " Plugin set up {{{1
 if &cp || exists("g:loaded_languagetool")
  finish
 endif
 let g:loaded_languagetool = "1"
 " }}}1
-" Hiligths {{{1
-hi def link LanguageToolCmd           Comment
+
+" Highligths {{{1
 hi def link LanguageToolErrorCount    Title
 hi def link LanguageToolLabel         Label
 hi def link LanguageToolUrl           Underlined

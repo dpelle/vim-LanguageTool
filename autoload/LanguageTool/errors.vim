@@ -23,7 +23,6 @@
 " (see ":help copyright" except use "LanguageTool.vim" instead of "Vim").
 "
 " }}} 1
-
 " This functions shows the error at point in the preview window
 function LanguageTool#errors#showErrorAtPoint() "{{{1
     let current_line = line('.')
@@ -38,10 +37,6 @@ function LanguageTool#errors#showErrorAtPoint() "{{{1
             wincmd P
             setlocal filetype=languagetool
             setlocal buftype=nowrite bufhidden=wipe nobuflisted noswapfile nowrap nonumber norelativenumber
-
-            call matchadd('LanguageToolErrorCount', '\m^Error:.*$')
-            call matchadd('LanguageToolLabel',      '\m^\(Context\|Message\|Corrections\|URL\):')
-            call matchadd('LanguageToolUrl',        '\m^URL:\s*\zs.*')
 
             let l:re =
                         \   '\m\%'  . line('$') . 'l\%9c'
@@ -65,7 +60,7 @@ endfunction
 
 " This functions appends a pretty printed version of current error at the end of the current buffer
 function LanguageTool#errors#prettyprint(error) "{{{1
-    call append(line('$'), 'Error:      '
+    call append(line('$'), 'Error:     '
               \ . ' '  . a:error.rule.id . ( !has_key(a:error.rule, 'subId') ? '' : (':' . a:error.rule['subId']))
               \ . ' @ ' . a:error.fromy . 'L ' . a:error.fromx . 'C')
     call append(line('$'), 'Message:    '     . a:error.message)
