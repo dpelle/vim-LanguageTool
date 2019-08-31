@@ -25,7 +25,7 @@
 " }}} 1
 
 " Guess language from 'a:lang' (either 'spelllang' or 'v:lang')
-function s:FindLanguage(lang) "{{{1
+function! s:FindLanguage(lang) "{{{1
   " This replaces things like en_gb en-GB as expected by LanguageTool,
   " only for languages that support variants in LanguageTool.
   let l:language = substitute(substitute(a:lang,
@@ -92,7 +92,7 @@ endfunction
 " Return a regular expression used to highlight a grammatical error
 " at line a:line in text.  The error starts at character a:start in
 " context a:context and its length in context is a:len.
-function s:LanguageToolHighlightRegex(line, context, start, len)  "{{{1
+function! s:LanguageToolHighlightRegex(line, context, start, len)  "{{{1
   let l:start_idx     = byteidx(a:context, a:start)
   let l:end_idx       = byteidx(a:context, a:start + a:len) - 1
   let l:start_ctx_idx = byteidx(a:context, a:start + a:len)
@@ -160,7 +160,7 @@ endfunction
 
 " Jump to a grammar mistake (called when pressing <Enter>
 " on a particular error in scratch buffer).
-function <sid>JumpToCurrentError() "{{{1
+function! <sid>JumpToCurrentError() "{{{1
   let l:save_cursor = getpos('.')
   norm! $
   if search('^Error:\s\+', 'beW') > 0
@@ -195,20 +195,20 @@ endfunction
 " a:line1 and a:line2 parameters are the first and last line number of
 " the range of line to check.
 " Returns 0 if success, < 0 in case of error.
-function LanguageTool#check() "{{{1
-  if !exists('s:lt_server_started')
-        echomsg 'LanguageTool needs to be initialized, call :LanguageToolSetUp'
+function! LanguageTool#check() "{{{1
+    if !exists('s:languagetool_setup_done')
+        echoerr 'LanguageTool not initialized, please run :LanguageToolSetUp'
         return -1
-  endif
-  call LanguageTool#clear()
+    endif
+    call LanguageTool#clear()
 
-  " Using window ID is more reliable than window number.
-  " But win_getid() does not exist in old version of Vim.
-  let s:languagetool_text_winid = exists('*win_getid')
-  \                             ? win_getid() : winnr()
-  let l:file_content = system('cat ' . expand('%'))
+    " Using window ID is more reliable than window number.
+    " But win_getid() does not exist in old version of Vim.
+    let s:languagetool_text_winid = exists('*win_getid')
+    \                             ? win_getid() : winnr()
+    let l:file_content = system('cat ' . expand('%'))
 
-  let data = {
+    let data = {
               \ 'disabledRules' : s:languagetool_disable_rules,
               \ 'enabledRules'  : s:languagetool_enable_rules,
               \ 'disabledCategories' : s:languagetool_disable_categories,
@@ -217,21 +217,28 @@ function LanguageTool#check() "{{{1
               \ 'text' : l:file_content
               \ }
 
-  let output = LanguageTool#server#send(data)
+    let output = LanguageTool#server#check(data)
 
-  " Loop on all errors in output of LanguageTool and
-  " collect information about all errors in list s:errors
-  let b:errors = output.matches
-  for l:error in b:errors
+    if empty(output)
+        return -1
+    endif
+
+    " Loop on all errors in output of LanguageTool and
+    " collect information about all errors in list s:errors
+    let b:errors = output.matches
+    for l:error in b:errors
+
     " There be dragons, this is true blackmagic happening here, we hardpatch offset field of LT
     " {from|to}{x|y} are not provided by LT JSON API, thus we have to compute them
     let l:start_byte_index = byteidxcomp(l:file_content, l:error.offset) + 2 " All errrors are offsetted by 2
     let l:error.fromy = byte2line(l:start_byte_index)
     let l:error.fromx = l:start_byte_index - line2byte(l:error.fromy)
+    let l:error.start_byte_idx = l:start_byte_index
 
     let l:stop_byte_index = byteidxcomp(l:file_content, l:error.offset + l:error.length) + 2
     let l:error.toy = byte2line(l:stop_byte_index)
     let l:error.tox = l:stop_byte_index - line2byte(l:error.toy)
+    let l:error.stop_byte_idx = l:stop_byte_index
   endfor
 
   " Also highlight errors in original buffer and populate location list.
@@ -255,7 +262,7 @@ endfunction
 
 " This function clears syntax highlighting created by LanguageTool plugin
 " and removes the scratch window containing grammar errors.
-function LanguageTool#clear() "{{{1
+function! LanguageTool#clear() "{{{1
   if exists('s:languagetool_error_buffer')
     if bufexists(s:languagetool_error_buffer)
       sil! exe "bd! " . s:languagetool_error_buffer
@@ -279,4 +286,23 @@ function LanguageTool#clear() "{{{1
   unlet! s:languagetool_text_winid
 endfunction
 
+" This functions shows the error at point in the preview window
+function! LanguageTool#showErrorAtPoint() "{{{1
+    let error = LanguageTool#errors#find()
+    if !empty(error)
+        " Open preview window and jump to it
+        pedit LanguageTool
+        wincmd P
+        setlocal filetype=languagetool
+        setlocal buftype=nowrite bufhidden=wipe nobuflisted noswapfile nowrap nonumber norelativenumber
 
+        call LanguageTool#errors#prettyprint(l:error)
+
+        call execute('0delete')
+
+        let b:error = l:error
+        " Return to original window
+        exe "norm! \<C-W>\<C-P>"
+        return
+    endif
+endfunction

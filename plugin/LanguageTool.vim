@@ -47,7 +47,7 @@ endif
 command! -nargs=0 LanguageToolClear :call LanguageTool#clear()
 command! -nargs=0 LanguageToolCheck :call LanguageTool#check()
 command! -nargs=0 LanguageToolSetUp :call LanguageTool#setup()
-command! -nargs=0 LanguageToolErrorAtPoint :call LanguageTool#errors#showErrorAtPoint()
+command! -nargs=0 LanguageToolErrorAtPoint :call LanguageTool#showErrorAtPoint()
 
 " Autocommands {{{1
 autocmd VimLeave * call LanguageTool#server#stop()

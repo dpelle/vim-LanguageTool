@@ -23,56 +23,49 @@
 " (see ":help copyright" except use "LanguageTool.vim" instead of "Vim").
 "
 " }}} 1
-" This functions shows the error at point in the preview window
-function LanguageTool#errors#showErrorAtPoint() "{{{1
-    let current_line = line('.')
+
+" This functions finds the error at point
+function! LanguageTool#errors#find() "{{{1
+    let line_byte_index = line2byte('.')
     let current_col = col('.')
 
+    let current_byte_idx = line_byte_index + current_col
+
     for l:error in b:errors
-        if error.fromy <= current_line && error.toy >=current_line &&
-                    \ error.fromx <=current_col && error.tox >= current_col
-
-            " Open preview window and jump to it
-            pedit LanguageTool
-            wincmd P
-            setlocal filetype=languagetool
-            setlocal buftype=nowrite bufhidden=wipe nobuflisted noswapfile nowrap nonumber norelativenumber
-
-            let l:re =
-                        \   '\m\%'  . line('$') . 'l\%9c'
-                        \ . '.\{' . (4 + l:error.context.offset) . '}\zs'
-                        \ . '.\{' .     (l:error.length) . '}'
-            if l:error.rule.id =~# 'HUNSPELL_RULE\|HUNSPELL_NO_SUGGEST_RULE\|MORFOLOGIK_RULE_\|_SPELLING_RULE\|_SPELLER_RULE'
-                call matchadd('LanguageToolSpellingError', l:re)
-            else
-                call matchadd('LanguageToolGrammarError', l:re)
-            endif
-
-            call LanguageTool#errors#prettyprint(l:error)
-
-            call execute('0delete')
-            " Return to original window
-            exe "norm! \<C-W>\<C-P>"
-            return
+        if error.start_byte_idx <= current_byte_idx && error.stop_byte_idx >= current_byte_idx
+            return l:error
         endif
     endfor
+    return {}
 endfunction
 
 " This functions appends a pretty printed version of current error at the end of the current buffer
-function LanguageTool#errors#prettyprint(error) "{{{1
+function! LanguageTool#errors#prettyprint(error) "{{{1
     call append(line('$'), 'Error:     '
               \ . ' '  . a:error.rule.id . ( !has_key(a:error.rule, 'subId') ? '' : (':' . a:error.rule['subId']))
               \ . ' @ ' . a:error.fromy . 'L ' . a:error.fromx . 'C')
     call append(line('$'), 'Message:    '     . a:error.message)
     call append(line('$'), 'Context:    ' . a:error.context.text)
 
+    call clearmatches()
+
+    let l:re =
+                \   '\m\%'  . (line('$') - 1) . 'l\%>' . (12 + a:error.context.offset) . 'c'
+                \ . '.\%<' . (14 + a:error.context.offset + a:error.context.length) . 'c'
+
+    if a:error.rule.id =~# 'HUNSPELL_RULE\|HUNSPELL_NO_SUGGEST_RULE\|MORFOLOGIK_RULE_\|_SPELLING_RULE\|_SPELLER_RULE'
+        call matchadd('LanguageToolSpellingError', l:re)
+    else
+        call matchadd('LanguageToolGrammarError', l:re)
+    endif
+
+    if has_key(a:error, 'urls')
+        call append(line('$'), 'URL:        ' . a:error.urls[0].value)
+    endif
     if has_key(a:error, 'replacements')
         call append(line('$'), 'Corrections:')
         for l:replacement in a:error.replacements
             call append(line('$'), '    ' . l:replacement.value)
         endfor
-    endif
-    if has_key(a:error, 'urls')
-        call append(line('$'), 'URL:        ' . a:error.urls[0].value)
     endif
 endfunction
