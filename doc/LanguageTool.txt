@@ -171,7 +171,7 @@ g:languagetool_server                                 *g:languagetool_server*
 
   Example: >
 
-  :let g:languagetool_jar='$HOME/languagetool/languagetool-standalone/target/LanguageTool-4.3-SNAPSHOT/LanguageTool-4.3-SNAPSHOT/languagetool-server.jar'
+  :let g:languagetool_server='$HOME/languagetool/languagetool-standalone/target/LanguageTool-4.3-SNAPSHOT/LanguageTool-4.3-SNAPSHOT/languagetool-server.jar'
 
 g:languagetool_port
 

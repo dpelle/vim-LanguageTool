@@ -15,7 +15,7 @@ LanguageTool. One advantage of the spelling checker of LanguageTool over
 Vim spelling checker, is that it uses the native Hunspell dictionary directly,
 so it works even with the latest Hunspell dictionaries containing features
 not supported by Vim. For example, the latest French Hunspell dictionaries
-from http://www.dicollecte.org are not supported by Vim but they work well
+from http://www.dicollecte.org are not supported by Vim, but they work well
 with LanguageTool. On the other hand, the Vim native spelling checker is
 faster and better integrated with Vim.
 
@@ -85,9 +85,9 @@ And run `vim -c 'helptags ~/.vim/doc'`.
 # Download LanguageTool
 
 To use this plugin, you need to install the Java LanguageTool grammar
-checker. You can chose to:
+checker. You can choose to:
 
-* Download the stand-alone version of
+* Download the standalone version of
   LanguageTool(LanguageTool-\*.zip) from
   [here](http://www.languagetool.org/) using the orange button labeled
   "LanguageTool for standalone for your desktop".
@@ -141,14 +141,14 @@ the 'enc' option if 'fenc' is empty.
 Several global variables can be set in your `.vimrc` to configure the behavior
 of the LanguageTool plugin.
 
-## `g:languagetool_jar`
+## `g:languagetool_server`
 
 This variable specifies the location of the LanguageTool java grammar
 checker program. Default is empty.
 Example:
 
 ```
-:let g:languagetool_jar='$HOME/languagetool/languagetool-standalone/target/LanguageTool-3.7-SNAPSHOT/LanguageTool-3.7-SNAPSHOT/languagetool-commandline.jar'
+:let g:languagetool_server='$HOME/languagetool/languagetool-standalone/target/LanguageTool-3.7-SNAPSHOT/LanguageTool-3.7-SNAPSHOT/languagetool-server.jar'
 ```
 
 ## `g:languagetool_lang`
@@ -226,14 +226,6 @@ This variable specifies checker rule-categories which are disabled.
 ## `g:languagetool_enable_categories`
 
 This variable specifies checker rule-categories which are enabled.
-
-## `g:languagetool_win_height`
-
-This variable specifies the height of the scratch window which contains
-all grammatical mistakes with some explanations. You can use a negative
-value to disable opening the scratch window. You can also make it empty ''
-to let Vim pick a default size.
-Default is: 14
 
 ## Colors
 

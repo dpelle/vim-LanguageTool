@@ -4,7 +4,12 @@
 "               http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_fr.png
 " Last Change:  2019 Aug 30
 " Version:      1.32
-
+" License: {{{1
+"
+" The VIM LICENSE applies to LanguageTool.vim plugin
+" (see ":help copyright" except use "LanguageTool.vim" instead of "Vim").
+"
+" }}} 1
 
 syntax match LanguageToolErrorCount /\m^Error:.*$/
 syntax match LanguageToolLabel /\v^(Context|Message|Correction|URL):/
