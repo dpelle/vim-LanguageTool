@@ -12,5 +12,5 @@
 " }}} 1
 
 syntax match LanguageToolErrorCount /\m^Error:.*$/
-syntax match LanguageToolLabel /\v^(Context|Message|Correction|URL):/
+syntax match LanguageToolLabel /\v^(Context|Message|Corrections|URL):/
 " call matchadd('LanguageToolUrl',        '\m^URL:\s*\zs.*')
