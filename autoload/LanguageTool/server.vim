@@ -77,7 +77,7 @@ function LanguageTool#server#check(data) "{{{1
                 \ . s:urlEncodeNotEmpty(a:data.disabledCategories, 'disabledCategories')
                 \ . s:urlEncodeNotEmpty(a:data.enabledCategories, 'enabledCategories')
                 \ . s:urlEncodeNotEmpty(a:data.language, 'language')
-                \ . ' --data-urlencode "text=' . escape(a:data.text, '"\') . '"'
+                \ . ' --data-urlencode "text=' . escape(a:data.text, '$"\') . '"'
                 \ . ' http://localhost:' . s:languagetool_port . '/v2/check'
                 \ . ' 2> ' . l:tmperror
 
