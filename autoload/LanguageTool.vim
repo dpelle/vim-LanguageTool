@@ -111,28 +111,15 @@ endfunction
 
 " Set up configuration.
 " Returns 0 if success, < 0 in case of error.
-function LanguageTool#setup() "{{{1
-  let s:languagetool_disable_rules = exists("g:languagetool_disable_rules")
-  \ ? g:languagetool_disable_rules
-  \ : 'WHITESPACE_RULE,EN_QUOTES'
-
-  let s:languagetool_enable_rules = exists("g:languagetool_enable_rules")
-  \ ? g:languagetool_enable_rules
-  \ : ''
-  let s:languagetool_disable_categories = exists("g:languagetool_disable_categories")
-  \ ? g:languagetool_disable_categories
-  \ : ''
-  let s:languagetool_enable_categories = exists("g:languagetool_enable_categories")
-  \ ? g:languagetool_enable_categories
-  \ : ''
-  let s:languagetool_win_height = exists("g:languagetool_win_height")
-  \ ? g:languagetool_win_height
-  \ : 14
+function! LanguageTool#setup() "{{{1
+  let s:languagetool_disable_rules = get(g:, 'languagetool_disable_rules', 'WHITESPACE_RULE,EN_QUOTES')
+  let s:languagetool_enable_rules = get(g:, 'languagetool_enable_rules', '')
+  let s:languagetool_disable_categories = get(g:, 'languagetool_disable_categories', '')
+  let s:languagetool_enable_categories = get(g:, 'languagetool_enable_categories', '')
   let s:languagetool_encoding = &fenc ? &fenc : &enc
-  let s:lt_server_started = get(s:, 'lt_server_started', 0)
 
   " Setting up language...
-  if exists("g:languagetool_lang")
+  if exists('g:languagetool_lang')
     let s:languagetool_lang = g:languagetool_lang
   else
     " Trying to guess language from 'spelllang' or 'v:lang'.
@@ -147,21 +134,6 @@ function LanguageTool#setup() "{{{1
         let s:languagetool_lang = 'en-US'
       endif
     endif
-  endif
-
-  let s:languagetool_jar = get(g:, 'languagetool_jar', $HOME . '/languagetool/languagetool-commandline.jar')
-
-  if !filereadable(s:languagetool_jar)
-    " Hmmm, can't find the jar file.  Try again with expand() in case user
-    " set it up as: let g:languagetool_jar = '$HOME/languagetool-commandline.jar'
-    let l:languagetool_jar = expand(s:languagetool_jar)
-    if !filereadable(expand(l:languagetool_jar))
-      echomsg "LanguageTool cannot be found at: " . s:languagetool_jar
-      echomsg "You need to install LanguageTool and/or set up g:languagetool_jar"
-      echomsg "to indicate the location of the languagetool-commandline.jar file."
-      return -1
-    endif
-    let s:languagetool_jar = l:languagetool_jar
   endif
 
   let s:languagetool_server = get(g:, 'languagetool_server', $HOME . '/languagetool/languagetool-server.jar')
@@ -180,6 +152,8 @@ function LanguageTool#setup() "{{{1
   endif
 
   call LanguageTool#server#start(s:languagetool_server)
+
+  let s:languagetool_setup_done = 1
 
   return 0
 endfunction

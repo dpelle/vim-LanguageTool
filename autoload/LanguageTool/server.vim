@@ -28,15 +28,13 @@
 
 " This function starts the server
 function LanguageTool#server#start(file_path) "{{{1
-  let s:languagetool_port = get(g:, 'languagetool_port', 8081)
+    let s:languagetool_port = get(g:, 'languagetool_port', 8081)
 
-  " Start the server
-  if !exists('s:languagetool_job')
-      let s:languagetool_job = jobstart('java -cp '
-                  \ . a:file_path . ' org.languagetool.server.HTTPServer --port '
-                  \ . s:languagetool_port,
-                  \ {'on_stdout': function('LanguageTool#server#stdoutHandler')})
-  endif
+    " Start the server
+    let s:languagetool_job = jobstart('java -cp '
+              \ . a:file_path . ' org.languagetool.server.HTTPServer --port '
+              \ . s:languagetool_port,
+              \ {'on_stdout': function('LanguageTool#server#stdoutHandler')})
 endfunction
 
 " This functions stops the server
@@ -63,7 +61,12 @@ endfunction
 
 " This function is used to send data to the server, for now this is sync, but it will get async
 " it returns the result as the vim dict corresponding to the json answer of the server
-function LanguageTool#server#send(data) "{{{1
+function LanguageTool#server#check(data) "{{{1
+    if !exists('s:lt_server_started')
+        echoerr 'LanguageTool server not started, please run :LanguageToolSetUp'
+        return {}
+    endif
+
     let l:tmperror = tempname()
 
     let l:languagetool_cmd = 'curl -X POST -s'
