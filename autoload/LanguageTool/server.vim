@@ -59,9 +59,8 @@ function s:urlEncodeNotEmpty(string, prefix) " {{{1
     return empty(a:string) ? '' : ' --data-urlencode "'. a:prefix . '=' .a:string.'"'
 endfunction
 
-" This function is used to send data to the server, for now this is sync, but it will get async
-" it returns the result as the vim dict corresponding to the json answer of the server
-function LanguageTool#server#check(data) "{{{1
+" This function is used to send requests to the server
+function! LanguageTool#server#send(method, endpoint, data)
     if !exists('s:lt_server_started')
         echoerr 'LanguageTool server not started, please run :LanguageToolSetUp'
         return {}
@@ -69,16 +68,11 @@ function LanguageTool#server#check(data) "{{{1
 
     let l:tmperror = tempname()
 
-    let l:languagetool_cmd = 'curl -X POST -s'
+    let l:languagetool_cmd = 'curl -X ' . a:method . ' -s'
                 \ . ' --header "Content-Type: application/x-www-form-urlencoded"'
                 \ . ' --header "Accept: application/json"'
-                \ . s:urlEncodeNotEmpty(a:data.disabledRules, 'disabledRules')
-                \ . s:urlEncodeNotEmpty(a:data.enabledRules, 'enabledRules')
-                \ . s:urlEncodeNotEmpty(a:data.disabledCategories, 'disabledCategories')
-                \ . s:urlEncodeNotEmpty(a:data.enabledCategories, 'enabledCategories')
-                \ . s:urlEncodeNotEmpty(a:data.language, 'language')
-                \ . ' --data-urlencode "text=' . escape(a:data.text, '$"\') . '"'
-                \ . ' http://localhost:' . s:languagetool_port . '/v2/check'
+                \ . a:data
+                \ . ' http://localhost:' . s:languagetool_port . '/v2/' . a:endpoint
                 \ . ' 2> ' . l:tmperror
 
     " Let json magic happen
@@ -102,4 +96,22 @@ function LanguageTool#server#check(data) "{{{1
     call delete(l:tmperror)
 
     return json_decode(output_str)
+endfunction
+
+" This function is used to send data to the server, for now this is sync, but it will get async
+" it returns the result as the vim dict corresponding to the json answer of the server
+function! LanguageTool#server#check(data) "{{{1
+    let l:request = s:urlEncodeNotEmpty(a:data.disabledRules, 'disabledRules')
+                \ . s:urlEncodeNotEmpty(a:data.enabledRules, 'enabledRules')
+                \ . s:urlEncodeNotEmpty(a:data.disabledCategories, 'disabledCategories')
+                \ . s:urlEncodeNotEmpty(a:data.enabledCategories, 'enabledCategories')
+                \ . s:urlEncodeNotEmpty(a:data.language, 'language')
+                \ . ' --data-urlencode "text=' . escape(a:data.text, '$"\') . '"'
+
+    return LanguageTool#server#send('POST', 'check', l:request)
+endfunction
+
+" This funcion gets the supported languages of LanguageTool using the server
+function! LanguageTool#server#get()
+    return LanguageTool#server#send('GET', 'languages', '')
 endfunction
