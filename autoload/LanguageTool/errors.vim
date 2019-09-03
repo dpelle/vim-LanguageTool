@@ -26,6 +26,10 @@
 
 " This functions finds the error at point
 function! LanguageTool#errors#find() "{{{1
+    if !exists('b:errors')
+        echoerr 'Please run :LanguageToolCheck'
+        return {}
+    endif
     let line_byte_index = line2byte('.')
     let current_col = col('.')
 
@@ -41,16 +45,17 @@ endfunction
 
 " This functions appends a pretty printed version of current error at the end of the current buffer
 function! LanguageTool#errors#prettyprint(error) "{{{1
-    call append(line('$'), 'Error:     '
+    call append(line('.') - 1, 'Error:      '
+                \ . (a:error.index + 1) . ' / ' . a:error.nr_errors
               \ . ' '  . a:error.rule.id . ( !has_key(a:error.rule, 'subId') ? '' : (':' . a:error.rule['subId']))
               \ . ' @ ' . a:error.fromy . 'L ' . a:error.fromx . 'C')
-    call append(line('$'), 'Message:    '     . a:error.message)
-    call append(line('$'), 'Context:    ' . a:error.context.text)
+    call append(line('.') - 1, 'Message:    '     . a:error.message)
+    call append(line('.') - 1, 'Context:    ' . a:error.context.text)
 
     call clearmatches()
 
     let l:re = LanguageTool#errors#highlightRegex(
-                \ line('$') - 1,
+                \ line('.') - 1,
                 \ a:error.context.text,
                 \ a:error.context.offset,
                 \ a:error.context.length)
@@ -62,12 +67,12 @@ function! LanguageTool#errors#prettyprint(error) "{{{1
     endif
 
     if has_key(a:error, 'urls')
-        call append(line('$'), 'URL:        ' . a:error.urls[0].value)
+        call append(line('.') - 1, 'URL:        ' . a:error.urls[0].value)
     endif
     if has_key(a:error, 'replacements')
-        call append(line('$'), 'Corrections:')
+        call append(line('.') - 1, 'Corrections:')
         for l:replacement in a:error.replacements
-            call append(line('$'), '    ' . l:replacement.value)
+            call append(line('.') - 1, '    ' . l:replacement.value)
         endfor
     endif
 endfunction
@@ -100,7 +105,51 @@ function! LanguageTool#errors#fix(error, sug_id) "{{{1
                 \ a:error.context.offset,
                 \ a:error.context.length)
     let l:fix = a:error.replacements[a:sug_id].value
+
+    call win_gotoid(a:error.source_win)
     " This is temporary, we might want to use / only if it is not present
     " in any of l:location_regex and l:fix
     execute 's/' . l:location_regex . '/' . l:fix . '/'
+endfunction
+
+" This function is used on the description of an error to get the underlying data
+function! LanguageTool#errors#errorAtPoint() "{{{1
+    let l:save_cursor = getpos('.')
+    norm! $
+    if search('^Error:\s\+', 'beW') > 0
+        let l:error_idx = expand('<cword>')
+        let l:error = b:errors[l:error_idx - 1]
+        call setpos('.', l:save_cursor)
+        return l:error
+    endif
+    return {}
+endfunction
+
+" This function returns the index of the suggestion at point
+function! LanguageTool#errors#suggestionAtPoint() "{{{1
+    return line('.') - search('Corrections:', 'bn') - 1
+endfunction
+
+" Jump to a grammar mistake (called when pressing <Enter>
+" on a particular error in scratch buffer).
+function! LanguageTool#errors#jumpToCurrentError() "{{{1
+    let l:error = LanguageTool#errors#errorAtPoint()
+    if !empty(l:error)
+        let l:line = l:error.fromy
+        let l:col  = l:error.fromx
+        let l:rule = l:error.rule.id
+        if exists('*win_gotoid')
+            call win_gotoid(l:error.source_win)
+        else
+            exe l:error.source_win . ' wincmd w'
+        endif
+        exe 'norm! ' . l:line . 'G0'
+        if l:col > 0
+            exe 'norm! ' . (l:col  - 1) . 'l'
+        endif
+
+        echon 'Jump to error ' . (l:error.index + 1) . '/' . l:error.nr_errors
+        \ . ' ' . l:rule . ' @ ' . l:line . 'L ' . l:col . 'C'
+        norm! zz
+    endif
 endfunction

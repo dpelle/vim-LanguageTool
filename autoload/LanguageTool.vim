@@ -125,36 +125,6 @@ function! LanguageTool#setupFinish() "{{{1
     endif
 endfunction
 
-" Jump to a grammar mistake (called when pressing <Enter>
-" on a particular error in scratch buffer).
-function! <sid>JumpToCurrentError() "{{{1
-  let l:save_cursor = getpos('.')
-  norm! $
-  if search('^Error:\s\+', 'beW') > 0
-    let l:error_idx = expand('<cword>')
-    let l:error = s:errors[l:error_idx - 1]
-    let l:line = l:error['fromy']
-    let l:col  = l:error['fromx']
-    let l:rule = l:error['ruleId']
-    call setpos('.', l:save_cursor)
-    if exists('*win_gotoid')
-      call win_gotoid(s:languagetool_text_winid)
-    else
-      exe s:languagetool_text_winid . ' wincmd w'
-    endif
-    exe 'norm! ' . l:line . 'G0'
-    if l:col > 0
-      exe 'norm! ' . (l:col  - 1) . 'l'
-    endif
-
-    echon 'Jump to error ' . l:error_idx . '/' . len(s:errors)
-    \ . ' ' . l:rule . ' @ ' . l:line . 'L ' . l:col . 'C'
-    norm! zz
-  else
-    call setpos('.', l:save_cursor)
-  endif
-endfunction
-
 " This function performs grammar checking of text in the current buffer.
 " It highlights grammar mistakes in current buffer and opens a scratch
 " window with all errors found.  It also populates the location-list of
@@ -171,7 +141,7 @@ function! LanguageTool#check() "{{{1
 
     " Using window ID is more reliable than window number.
     " But win_getid() does not exist in old version of Vim.
-    let s:languagetool_text_winid = exists('*win_getid')
+    let l:languagetool_text_winid = exists('*win_getid')
     \                             ? win_getid() : winnr()
     let l:file_content = system('cat ' . expand('%'))
 
@@ -193,38 +163,44 @@ function! LanguageTool#check() "{{{1
     " Loop on all errors in output of LanguageTool and
     " collect information about all errors in list s:errors
     let b:errors = output.matches
+    let l:index = 0
     for l:error in b:errors
 
-    " There be dragons, this is true blackmagic happening here, we hardpatch offset field of LT
-    " {from|to}{x|y} are not provided by LT JSON API, thus we have to compute them
-    let l:start_byte_index = byteidxcomp(l:file_content, l:error.offset) + 2 " All errrors are offsetted by 2
-    let l:error.fromy = byte2line(l:start_byte_index)
-    let l:error.fromx = l:start_byte_index - line2byte(l:error.fromy)
-    let l:error.start_byte_idx = l:start_byte_index
+        " There be dragons, this is true blackmagic happening here, we hardpatch offset field of LT
+        " {from|to}{x|y} are not provided by LT JSON API, thus we have to compute them
+        let l:start_byte_index = byteidxcomp(l:file_content, l:error.offset) + 2 " All errrors are offsetted by 2
+        let l:error.fromy = byte2line(l:start_byte_index)
+        let l:error.fromx = l:start_byte_index - line2byte(l:error.fromy)
+        let l:error.start_byte_idx = l:start_byte_index
 
-    let l:stop_byte_index = byteidxcomp(l:file_content, l:error.offset + l:error.length) + 2
-    let l:error.toy = byte2line(l:stop_byte_index)
-    let l:error.tox = l:stop_byte_index - line2byte(l:error.toy)
-    let l:error.stop_byte_idx = l:stop_byte_index
-  endfor
+        let l:stop_byte_index = byteidxcomp(l:file_content, l:error.offset + l:error.length) + 2
+        let l:error.toy = byte2line(l:stop_byte_index)
+        let l:error.tox = l:stop_byte_index - line2byte(l:error.toy)
+        let l:error.stop_byte_idx = l:stop_byte_index
 
-  " Also highlight errors in original buffer and populate location list.
-  setlocal errorformat=%f:%l:%c:%m
-  for l:error in b:errors
-    let l:re = LanguageTool#errors#highlightRegex(l:error.fromy,
-    \                                       l:error.context.text,
-    \                                       l:error.context.offset,
-    \                                       l:error.context.length)
-    if l:error.rule.id =~# 'HUNSPELL_RULE\|HUNSPELL_NO_SUGGEST_RULE\|MORFOLOGIK_RULE_\|_SPELLING_RULE\|_SPELLER_RULE'
-      call matchadd('LanguageToolSpellingError', l:re)
-    else
-      call matchadd('LanguageToolGrammarError', l:re)
-    endif
-    laddexpr expand('%') . ':'
-    \ . l:error.fromy . ':'  . l:error.fromx . ':'
-    \ . l:error.rule.id . ' : ' . l:error.message
-  endfor
-  return 0
+        let l:error.source_win = l:languagetool_text_winid
+        let l:error.index = l:index
+        let l:index = l:index + 1
+        let l:error.nr_errors = len(b:errors)
+    endfor
+
+    " Also highlight errors in original buffer and populate location list.
+    setlocal errorformat=%f:%l:%c:%m
+    for l:error in b:errors
+        let l:re = LanguageTool#errors#highlightRegex(l:error.fromy,
+        \                                       l:error.context.text,
+        \                                       l:error.context.offset,
+        \                                       l:error.context.length)
+        if l:error.rule.id =~# 'HUNSPELL_RULE\|HUNSPELL_NO_SUGGEST_RULE\|MORFOLOGIK_RULE_\|_SPELLING_RULE\|_SPELLER_RULE'
+            call matchadd('LanguageToolSpellingError', l:re)
+        else
+            call matchadd('LanguageToolGrammarError', l:re)
+        endif
+        laddexpr expand('%') . ':'
+        \ . l:error.fromy . ':'  . l:error.fromx . ':'
+        \ . l:error.rule.id . ' : ' . l:error.message
+    endfor
+    return 0
 endfunction
 
 " This function clears syntax highlighting created by LanguageTool plugin
@@ -257,22 +233,18 @@ endfunction
 function! LanguageTool#showErrorAtPoint() "{{{1
     let error = LanguageTool#errors#find()
     if !empty(error)
-        let l:source_win_id = win_getid()
         " Open preview window and jump to it
         pedit LanguageTool
         wincmd P
-        setlocal filetype=languagetool
-        setlocal buftype=nowrite bufhidden=wipe nobuflisted noswapfile nowrap nonumber norelativenumber
 
         call LanguageTool#errors#prettyprint(l:error)
 
-        call execute('0delete')
-
         let b:error = l:error
-        let b:error.source_win = l:source_win_id
 
+        setlocal filetype=languagetool
+        setlocal buftype=nowrite bufhidden=wipe nobuflisted noswapfile nowrap nonumber norelativenumber noma
         " Map <CR> to fix error with suggestion at point
-        nnoremap <buffer> <CR> :call LanguageTool#fixErrorWithSuggestionAtPoint()<CR>
+        nnoremap <buffer> f :call LanguageTool#fixErrorWithSuggestionAtPoint()<CR>
 
         " Return to original window
         exe "norm! \<C-W>\<C-P>"
@@ -283,11 +255,9 @@ endfunction
 " This function is used to fix error in the preview window using
 " the suggestion under cursor
 function! LanguageTool#fixErrorWithSuggestionAtPoint() "{{{1
-    let l:suggestion_id = line('.') - (line('$') - len(b:error.replacements)) - 1
+    let l:suggestion_id = LanguageTool#errors#suggestionAtPoint()
     if l:suggestion_id >= 0
         let l:error_to_fix = b:error
-
-        call win_gotoid(b:error.source_win)
 
         call LanguageTool#errors#fix(l:error_to_fix, l:suggestion_id)
     endif
@@ -296,4 +266,34 @@ endfunction
 " This function is used to fix the error at point using suggestion nr sug_id
 function! LanguageTool#fixErrorAtPoint(sug_id) "{{{1
     call LanguageTool#errors#fix(LanguageTool#errors#find(), a:sug_id)
+endfunction
+
+" This functions opens a new window with all errors in the current buffer
+" and mappings to navigate to them, and fix them
+function! LanguageTool#summary() "{{{1
+    let l:errors = b:errors
+    " Open a new window
+    wincmd v
+    enew
+
+    for l:error in l:errors
+        call LanguageTool#errors#prettyprint(l:error)
+        call append(line('.') - 1, '')
+    endfor
+
+    execute '$delete'
+    execute 'goto 1'
+
+    " We need to transfer the errors to this buffer
+    let b:errors = l:errors
+
+    nnoremap <buffer><silent> <CR> :call LanguageTool#errors#jumpToCurrentError()<CR>
+    nnoremap <buffer><silent> f 
+                \ :call LanguageTool#errors#fix(
+                \ LanguageTool#errors#errorAtPoint(),
+                \ LanguageTool#errors#suggestionAtPoint())<CR>
+    nnoremap <buffer><silent> q :q<CR>
+
+    setlocal filetype=languagetool
+    setlocal buftype=nowrite bufhidden=wipe nobuflisted noswapfile nowrap nonumber norelativenumber noma
 endfunction

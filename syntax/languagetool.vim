@@ -11,13 +11,6 @@
 "
 " }}} 1
 
-" Highligths {{{1
-hi def link LanguageToolErrorCount    Title
-hi def link LanguageToolLabel         Label
-hi def link LanguageToolUrl           Underlined
-hi def link LanguageToolGrammarError  Error
-hi def link LanguageToolSpellingError WarningMsg
-
 " Matchs {{{1
 syntax match LanguageToolErrorCount /\m^Error:.*$/
 syntax match LanguageToolLabel /\v^(Context|Message|Corrections|URL):/
