@@ -2,6 +2,7 @@
 :LanguageToolClear	LanguageTool.txt	/*:LanguageToolClear*
 :LanguageToolFixAtPoint	LanguageTool.txt	/*:LanguageToolFixAtPoint*
 :LanguageToolSetUp	LanguageTool.txt	/*:LanguageToolSetUp*
+:LanguageToolSummary	LanguageTool.txt	/*:LanguageToolSummary*
 :LanguageToolSupportedLanguages	LanguageTool.txt	/*:LanguageToolSupportedLanguages*
 LanguageTool	LanguageTool.txt	/*LanguageTool*
 LanguageTool.txt	LanguageTool.txt	/*LanguageTool.txt*

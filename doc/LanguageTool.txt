@@ -34,7 +34,7 @@ LanguageTool. One advantage of the spelling checker of LanguageTool over
 Vim spelling checker, is that it uses the native Hunspell dictionary directly,
 so it works even with the latest Hunspell dictionaries containing features
 not supported by Vim. For example, the latest French Hunspell dictionaries
-from http://www.dicollecte.org are not supported by Vim but they work well
+from http://www.dicollecte.org are not supported by Vim, but they work well
 with LanguageTool. On the other hand, the Vim native spelling checker is
 faster and better integrated with Vim.
 
@@ -103,7 +103,7 @@ this line in you ~/.vimrc: >
 To use this plugin, you need to install the Java LanguageTool program. You
 can choose to:
 
-* download stand-alone version of LanguageTool (LanguageTool-*.zip) from:
+* download standalone version of LanguageTool (LanguageTool-*.zip) from:
   http://www.languagetool.org/ using the orange button labeled
   "Download LanguageTool for stand-alone use". The standalone version of
   Vim not only does grammar checking but also contains Hunspell dictionaries
@@ -231,13 +231,14 @@ hi LanguageToolSpellingError guisp=red  gui=undercurl guifg=NONE guibg=NONE cter
 
 6. Features                                           *languagetool-features*
 
-The LanguageTool plugin defines 4 commands : 
+The LanguageTool plugin defines the following commands:
     |:LanguageToolCheck|
     |:LanguageToolClean|
     |:LanguageToolSetUp|
     |:LanguageToolErrorAtPoint|
     |:LanguageToolSupportedLanguages|
     |:LanguageToolFixAtPoint|
+    |:LanguageToolSummary|
 
 :LanguageToolSetUp                                       *:LanguageToolSetUp*
 
@@ -264,7 +265,7 @@ The two commands are also available from the menu in gvim: >
 
 :LanguageToolErrorAtPoint
 
-This command opens more informations on the error at point in the preview
+This command opens more information on the error at point in the preview
 window.
 When in the preview window, you can fix the error by putting the cursor on a
 given correction and hitting <CR>.
@@ -278,6 +279,14 @@ Use this command to know which languages are supported by the server you have.
 This command uses [count]th suggestion to fix error at point (starting at
 index 0).
 Without [count] the command is the same as `:0LanguageToolFixAtPoint`.
+
+:LanguageToolSummary                                 *:LanguageToolSummary*
+
+This command opens the summary window, which prints out all gramatical
+mistakes in the document.
+You can navigate them and see the suggestions.
+When on a given mistake, hitting <CR> will bring you the mistake, and
+hitting `f` on a suggestion will use this suggestion to fix the mistake.
 
 Using the Location-list~
 
