@@ -2,7 +2,7 @@
 " Maintainer:   Dominique Pellé <dominique.pelle@gmail.com>
 " Screenshots:  http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_en.png
 "               http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_fr.png
-" Last Change:  2019 Aug 30
+" Last Change:  2019 Sep 03
 " Version:      1.32
 "
 " Long Description: {{{1
@@ -87,26 +87,6 @@ function! s:FindLanguage(lang) "{{{1
   " Removing the region (if any) and trying again.
   let l:language = substitute(l:language, '-.*', '', '')
   return has_key(l:supportedLanguages, l:language) ? l:language : ''
-endfunction
-
-" Return a regular expression used to highlight a grammatical error
-" at line a:line in text.  The error starts at character a:start in
-" context a:context and its length in context is a:len.
-function! s:LanguageToolHighlightRegex(line, context, start, len)  "{{{1
-  let l:start_idx     = byteidx(a:context, a:start)
-  let l:end_idx       = byteidx(a:context, a:start + a:len) - 1
-  let l:start_ctx_idx = byteidx(a:context, a:start + a:len)
-  let l:end_ctx_idx   = byteidx(a:context, a:start + a:len + 5) - 1
-
-  " The substitute allows matching errors which span multiple lines.
-  " The part after \ze gives a bit of context to avoid spurious
-  " highlighting when the text of the error is present multiple
-  " times in the line.
-  return '\V'
-  \     . '\%' . a:line . 'l'
-  \     . substitute(escape(a:context[l:start_idx : l:end_idx], "'\\"), ' ', '\\_\\s', 'g')
-  \     . '\ze'
-  \     . substitute(escape(a:context[l:start_ctx_idx : l:end_ctx_idx], "'\\"), ' ', '\\_\\s', 'g')
 endfunction
 
 " Set up configuration.
@@ -244,7 +224,7 @@ function! LanguageTool#check() "{{{1
   " Also highlight errors in original buffer and populate location list.
   setlocal errorformat=%f:%l:%c:%m
   for l:error in b:errors
-    let l:re = s:LanguageToolHighlightRegex(l:error.fromy,
+    let l:re = LanguageTool#errors#highlightRegex(l:error.fromy,
     \                                       l:error.context.text,
     \                                       l:error.context.offset,
     \                                       l:error.context.length)
