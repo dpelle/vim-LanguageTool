@@ -81,10 +81,10 @@ endfunction
 " at line a:line in text.  The error starts at character a:start in
 " context a:context and its length in context is a:len.
 function! LanguageTool#errors#highlightRegex(line, context, start, len)  "{{{1
-  let l:start_idx     = byteidx(a:context, a:start)
-  let l:end_idx       = byteidx(a:context, a:start + a:len) - 1
-  let l:start_ctx_idx = byteidx(a:context, a:start + a:len)
-  let l:end_ctx_idx   = byteidx(a:context, a:start + a:len + 5) - 1
+  let l:start_idx     = byteidxcomp(a:context, a:start)
+  let l:end_idx       = byteidxcomp(a:context, a:start + a:len) - 1
+  let l:start_ctx_idx = byteidxcomp(a:context, a:start + a:len)
+  let l:end_ctx_idx   = byteidxcomp(a:context, a:start + a:len + 5) - 1
 
   " The substitute allows matching errors which span multiple lines.
   " The part after \ze gives a bit of context to avoid spurious
