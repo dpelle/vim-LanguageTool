@@ -236,6 +236,7 @@ function! LanguageTool#showErrorAtPoint() "{{{1
         " Open preview window and jump to it
         pedit LanguageTool
         wincmd P
+        setlocal modifiable
 
         call LanguageTool#errors#prettyprint(l:error)
 
