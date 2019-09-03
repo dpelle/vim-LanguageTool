@@ -276,8 +276,9 @@ Use this command to know which languages are supported by the server you have.
 
 :[count]LanguageToolFixAtPoint                    *:LanguageToolFixAtPoint*
 
-This command uses [count] suggestion to fix error at point.
-Without [count] it uses first suggestion.
+This command uses [count]th suggestion to fix error at point (starting at
+index 0).
+Without [count] the command is the same as `:0LanguageToolFixAtPoint`.
 
 Using the Location-list~
 
