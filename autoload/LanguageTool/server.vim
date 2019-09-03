@@ -51,6 +51,7 @@ function LanguageTool#server#stdoutHandler(job_id, stdout, event) "{{{1
     if string(a:stdout) =~? 'Server started'
         echomsg 'LanguageTool server started'
         let s:lt_server_started = 1
+        call LanguageTool#setupFinish()
     endif
 endfunction
 
@@ -112,6 +113,6 @@ function! LanguageTool#server#check(data) "{{{1
 endfunction
 
 " This funcion gets the supported languages of LanguageTool using the server
-function! LanguageTool#server#get()
+function! LanguageTool#server#get() "{{{1
     return LanguageTool#server#send('GET', 'languages', '')
 endfunction

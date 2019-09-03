@@ -23,6 +23,20 @@
 " (see ":help copyright" except use "LanguageTool.vim" instead of "Vim").
 "
 " }}} 1
+" This function is used to know if the language is supported or not by the running languagetool server
+function! s:languageIsSupported(lang) "{{{1
+    if !exists('s:supported_languages')
+        let s:supported_languages = LanguageTool#server#get()
+    endif
+
+    for l:language in s:supported_languages
+        if a:lang ==? l:language.longCode
+            return 1
+        endif
+    endfor
+
+    return 0
+endfunction
 
 " Guess language from 'a:lang' (either 'spelllang' or 'v:lang')
 function! s:FindLanguage(lang) "{{{1
@@ -33,109 +47,78 @@ function! s:FindLanguage(lang) "{{{1
   \  '\=tolower(submatch(1)) . toupper(submatch(2))', ''),
   \  '_', '-', '')
 
-  " All supported languages (with variants) from version LanguageTool.
-  let l:supportedLanguages =  {
-  \  'ast'   : 1,
-  \  'be'    : 1,
-  \  'br'    : 1,
-  \  'ca'    : 1,
-  \  'cs'    : 1,
-  \  'da'    : 1,
-  \  'de'    : 1,
-  \  'de-AT' : 1,
-  \  'de-CH' : 1,
-  \  'de-DE' : 1,
-  \  'el'    : 1,
-  \  'en'    : 1,
-  \  'en-AU' : 1,
-  \  'en-CA' : 1,
-  \  'en-GB' : 1,
-  \  'en-NZ' : 1,
-  \  'en-US' : 1,
-  \  'en-ZA' : 1,
-  \  'eo'    : 1,
-  \  'es'    : 1,
-  \  'fa'    : 1,
-  \  'fr'    : 1,
-  \  'gl'    : 1,
-  \  'is'    : 1,
-  \  'it'    : 1,
-  \  'ja'    : 1,
-  \  'km'    : 1,
-  \  'lt'    : 1,
-  \  'ml'    : 1,
-  \  'nl'    : 1,
-  \  'pl'    : 1,
-  \  'pt'    : 1,
-  \  'pt-BR' : 1,
-  \  'pt-PT' : 1,
-  \  'ro'    : 1,
-  \  'ru'    : 1,
-  \  'sk'    : 1,
-  \  'sl'    : 1,
-  \  'sv'    : 1,
-  \  'ta'    : 1,
-  \  'tl'    : 1,
-  \  'uk'    : 1,
-  \  'zh'    : 1
-  \}
-
-  if has_key(l:supportedLanguages, l:language)
+  if s:languageIsSupported(l:language)
     return l:language
   endif
 
   " Removing the region (if any) and trying again.
   let l:language = substitute(l:language, '-.*', '', '')
-  return has_key(l:supportedLanguages, l:language) ? l:language : ''
+  return s:languageIsSupported(l:language) ? l:language : ''
+endfunction
+
+" This functions prints all languages supported by the server
+function! LanguageTool#supportedLanguages() "{{{1
+    if !exists('s:supported_languages')
+        let s:supported_languages = LanguageTool#server#get()
+    endif
+
+    let l:language_list = []
+
+    for l:language in s:supported_languages
+        call add(l:language_list, l:language.name . ' [' . l:language.longCode . ']')
+    endfor
+
+    echomsg join(l:language_list, ', ')
+
 endfunction
 
 " Set up configuration.
 " Returns 0 if success, < 0 in case of error.
 function! LanguageTool#setup() "{{{1
-  let s:languagetool_disable_rules = get(g:, 'languagetool_disable_rules', 'WHITESPACE_RULE,EN_QUOTES')
-  let s:languagetool_enable_rules = get(g:, 'languagetool_enable_rules', '')
-  let s:languagetool_disable_categories = get(g:, 'languagetool_disable_categories', '')
-  let s:languagetool_enable_categories = get(g:, 'languagetool_enable_categories', '')
-  let s:languagetool_encoding = &fenc ? &fenc : &enc
+    let s:languagetool_disable_rules = get(g:, 'languagetool_disable_rules', 'WHITESPACE_RULE,EN_QUOTES')
+    let s:languagetool_enable_rules = get(g:, 'languagetool_enable_rules', '')
+    let s:languagetool_disable_categories = get(g:, 'languagetool_disable_categories', '')
+    let s:languagetool_enable_categories = get(g:, 'languagetool_enable_categories', '')
+    let s:languagetool_encoding = &fenc ? &fenc : &enc
 
-  " Setting up language...
-  if exists('g:languagetool_lang')
-    let s:languagetool_lang = g:languagetool_lang
-  else
-    " Trying to guess language from 'spelllang' or 'v:lang'.
-    let s:languagetool_lang = s:FindLanguage(&spelllang)
-    if s:languagetool_lang == ''
-      let s:languagetool_lang = s:FindLanguage(v:lang)
-      if s:languagetool_lang == ''
-        echoerr 'Failed to guess language from spelllang=['
-        \ . &spelllang . '] or from v:lang=[' . v:lang . ']. '
-        \ . 'Defauling to English (en-US). '
-        \ . 'See ":help LanguageTool" regarding setting g:languagetool_lang.'
-        let s:languagetool_lang = 'en-US'
-      endif
+    let s:languagetool_server = get(g:, 'languagetool_server', $HOME . '/languagetool/languagetool-server.jar')
+
+    if !filereadable(expand(s:languagetool_server))
+        echomsg "LanguageTool cannot be found at: " . s:languagetool_server
+        echomsg "You need to install LanguageTool and/or set up g:languagetool_server"
+        echomsg "to indicate the location of the languagetool-server.jar file."
+        return -1
     endif
-  endif
 
-  let s:languagetool_server = get(g:, 'languagetool_server', $HOME . '/languagetool/languagetool-server.jar')
+    call LanguageTool#server#start(s:languagetool_server)
 
-  if !filereadable(s:languagetool_server)
-    " Hmmm, can't find the server file.  Try again with expand() in case user
-    " set it up as: let g:languagetool_server = '$HOME/languagetool-server.jar
-    let l:languagetool_server = expand(s:languagetool_server)
-    if !filereadable(expand(l:languagetool_server))
-      echomsg "LanguageTool cannot be found at: " . s:languagetool_server
-      echomsg "You need to install LanguageTool and/or set up g:languagetool_server"
-      echomsg "to indicate the location of the languagetool-server.jar file."
-      return -1
+    let s:languagetool_setup_done = 1
+
+    return 0
+endfunction
+
+" Sets up the plugin, but after server startup
+" This function is called by server stdout handler just
+" after server starts
+function! LanguageTool#setupFinish() "{{{1
+
+    " Setting up language...
+    if exists('g:languagetool_lang')
+        let s:languagetool_lang = g:languagetool_lang
+    else
+        " Trying to guess language from 'spelllang' or 'v:lang'.
+        let s:languagetool_lang = s:FindLanguage(&spelllang)
+        if s:languagetool_lang == ''
+            let s:languagetool_lang = s:FindLanguage(v:lang)
+            if s:languagetool_lang == ''
+                echoerr 'Failed to guess language from spelllang=['
+                \ . &spelllang . '] or from v:lang=[' . v:lang . ']. '
+                \ . 'Defauling to English (en-US). '
+                \ . 'See ":help LanguageTool" regarding setting g:languagetool_lang.'
+                let s:languagetool_lang = 'en-US'
+            endif
+        endif
     endif
-    let s:languagetool_server = l:languagetool_server
-  endif
-
-  call LanguageTool#server#start(s:languagetool_server)
-
-  let s:languagetool_setup_done = 1
-
-  return 0
 endfunction
 
 " Jump to a grammar mistake (called when pressing <Enter>
