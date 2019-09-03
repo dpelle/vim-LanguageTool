@@ -188,8 +188,8 @@ g:languagetool_lang                                     *g:languagetool_lang*
   variant in order for LanguageTool to signal spelling errors. In other
   words, with  :set spelllang=en  LanguageTool only signals grammar
   mistakes whereas with  :set spelllang=en_us LanguageTool signals
-  spelling mistakes and grammar mistakes. The valid language codes are
-  provided by `:LanguageToolSupportedLanguages`
+  spelling mistakes and grammar mistakes.
+  Valid language codes are provided by `:LanguageToolSupportedLanguages`
 
 g:languagetool_disable_rules                   *g:languagetool_disable_rules*
 

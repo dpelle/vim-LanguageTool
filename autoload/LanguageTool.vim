@@ -117,7 +117,7 @@ function! LanguageTool#setupFinish() "{{{1
             if s:languagetool_lang == ''
                 echoerr 'Failed to guess language from spelllang=['
                 \ . &spelllang . '] or from v:lang=[' . v:lang . ']. '
-                \ . 'Defauling to English (en-US). '
+                \ . 'Defaulting to English (en-US). '
                 \ . 'See ":help LanguageTool" regarding setting g:languagetool_lang.'
                 let s:languagetool_lang = 'en-US'
             endif
