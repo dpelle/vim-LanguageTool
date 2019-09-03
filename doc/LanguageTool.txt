@@ -1,5 +1,4 @@
-*LanguageTool.txt*  A grammar checker in Vim for English, French, German, etc.
-*LanguageTool*
+*LanguageTool.txt*  A grammar checker in Vim for English, French, German, etc. *LanguageTool*
 
 Author:      Dominique Pellé <dominique.pelle@gmail.com>
 Last Change: 2019 Sep 03
