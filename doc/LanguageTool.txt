@@ -2,7 +2,7 @@
 *LanguageTool*
 
 Author:      Dominique Pellé <dominique.pelle@gmail.com>
-Last Change: 2019 Aug 30
+Last Change: 2019 Sep 03
 
 For Vim version 8.0 and above
 
@@ -188,56 +188,9 @@ g:languagetool_lang                                     *g:languagetool_lang*
   (currently English German and Portuguese), it is necessary to specify the
   variant in order for LanguageTool to signal spelling errors. In other
   words, with  :set spelllang=en  LanguageTool only signals grammar
-  mistakes whereas with  :set spellllang=en_us LanguageTool signals
-  spelling mistakes and grammar mistakes. The valid language codes are: >
-
-    ast    Asturian
-    be     Belarusian
-    br     Breton
-    ca     Catalan
-    cs     Czech
-    da     Danish
-    de     German
-    de-AT  German  (Austria)
-    de-CH  German  (Switzerland)
-    de-DE  German  (Germany)
-    el     Greek
-    en     English
-    en-AU  English (Australia)
-    en-CA  English (Canada)
-    en-GB  English (Great Britain)
-    en-NZ  English (New Zealand)
-    en-US  English (US)
-    en-ZA  English (South Africa)
-    eo     Esperanto
-    es     Spanish
-    fa     Persian
-    fr     French
-    gl     Galician
-    it     Italian
-    ja     Japanese
-    km     Khmer
-    lt     Lithuanian
-    ml     Malayalam
-    nl     Dutch
-    pl     Polish
-    pt     Portuguese
-    pt-BR  Portuguese (Brazil)
-    pt-PT  Portuguese (Portugal)
-    ro     Romanian
-    ru     Russian
-    sk     Slovak
-    sl     Slovenian
-    sr     Serbian
-    sr-BA  Serbian (Bosnia and Herzegovina)
-    sr-HR  Serbian (Croatia)
-    sr-ME  Serbian (Montenegro)
-    sr-RS  Serbian (Serbia)
-    sv     Swedish
-    ta     Tamil
-    tl     Tagalog
-    uk     Ukrainian
-    zh     Chinese
+  mistakes whereas with  :set spelllang=en_us LanguageTool signals
+  spelling mistakes and grammar mistakes. The valid language codes are
+  provided by `:LanguageToolSupportedLanguages`
 
 g:languagetool_disable_rules                   *g:languagetool_disable_rules*
 
@@ -284,6 +237,8 @@ The LanguageTool plugin defines 4 commands :
     |:LanguageToolClean|
     |:LanguageToolSetUp|
     |:LanguageToolErrorAtPoint|
+    |:LanguageToolSupportedLanguages|
+    |:LanguageToolFixAtPoint|
 
 :LanguageToolSetUp                                       *:LanguageToolSetUp*
 
@@ -312,6 +267,17 @@ The two commands are also available from the menu in gvim: >
 
 This command opens more informations on the error at point in the preview
 window.
+When in the preview window, you can fix the error by putting the cursor on a
+given correction and hitting <CR>.
+
+:LanguageToolSupportedLanguages            *:LanguageToolSupportedLanguages*
+
+Use this command to know which languages are supported by the server you have.
+
+:[count]LanguageToolFixAtPoint                    *:LanguageToolFixAtPoint*
+
+This command uses [count] suggestion to fix error at point.
+Without [count] it uses first suggestion.
 
 Using the Location-list~
 

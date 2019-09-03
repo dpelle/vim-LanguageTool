@@ -91,3 +91,16 @@ function! LanguageTool#errors#highlightRegex(line, context, start, len)  "{{{1
   \     . '\ze'
   \     . substitute(escape(a:context[l:start_ctx_idx : l:end_ctx_idx], "'\\"), ' ', '\\_\\s', 'g')
 endfunction
+
+" This function uses suggestion sug_id to fix error error
+function! LanguageTool#errors#fix(error, sug_id) "{{{1
+    let l:location_regex = LanguageTool#errors#highlightRegex(
+                \ a:error.fromy,
+                \ a:error.context.text,
+                \ a:error.context.offset,
+                \ a:error.context.length)
+    let l:fix = a:error.replacements[a:sug_id].value
+    " This is temporary, we might want to use / only if it is not present
+    " in any of l:location_regex and l:fix
+    execute 's/' . l:location_regex . '/' . l:fix . '/'
+endfunction

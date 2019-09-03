@@ -58,6 +58,11 @@ endfunction
 
 " This functions prints all languages supported by the server
 function! LanguageTool#supportedLanguages() "{{{1
+    if !exists('s:languagetool_setup_done')
+        echoerr 'LanguageTool not initialized, please run :LanguageToolSetUp'
+        return -1
+    endif
+
     if !exists('s:supported_languages')
         let s:supported_languages = LanguageTool#server#get()
     endif
@@ -69,7 +74,6 @@ function! LanguageTool#supportedLanguages() "{{{1
     endfor
 
     echomsg join(l:language_list, ', ')
-
 endfunction
 
 " Set up configuration.
@@ -253,6 +257,7 @@ endfunction
 function! LanguageTool#showErrorAtPoint() "{{{1
     let error = LanguageTool#errors#find()
     if !empty(error)
+        let l:source_win_id = win_getid()
         " Open preview window and jump to it
         pedit LanguageTool
         wincmd P
@@ -264,8 +269,31 @@ function! LanguageTool#showErrorAtPoint() "{{{1
         call execute('0delete')
 
         let b:error = l:error
+        let b:error.source_win = l:source_win_id
+
+        " Map <CR> to fix error with suggestion at point
+        nnoremap <buffer> <CR> :call LanguageTool#fixErrorWithSuggestionAtPoint()<CR>
+
         " Return to original window
         exe "norm! \<C-W>\<C-P>"
         return
     endif
+endfunction
+
+" This function is used to fix error in the preview window using
+" the suggestion under cursor
+function! LanguageTool#fixErrorWithSuggestionAtPoint() "{{{1
+    let l:suggestion_id = line('.') - (line('$') - len(b:error.replacements)) - 1
+    if l:suggestion_id >= 0
+        let l:error_to_fix = b:error
+
+        call win_gotoid(b:error.source_win)
+
+        call LanguageTool#errors#fix(l:error_to_fix, l:suggestion_id)
+    endif
+endfunction
+
+" This function is used to fix the error at point using suggestion nr sug_id
+function! LanguageTool#fixErrorAtPoint(sug_id) "{{{1
+    call LanguageTool#errors#fix(LanguageTool#errors#find(), a:sug_id)
 endfunction
