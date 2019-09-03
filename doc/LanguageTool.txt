@@ -279,6 +279,10 @@ Use this command to know which languages are supported by the server you have.
 This command uses [count]th suggestion to fix error at point (starting at
 index 0).
 Without [count] the command is the same as `:0LanguageToolFixAtPoint`.
+Warning: When fixing errors, the suggestions might change line arrangement
+(e.g. deleting newlines, ...) this will cause all errors bellow this point to
+not match anymore. Rearranging the lines as they were before fixing should
+solve the issue.
 
 :LanguageToolSummary                                 *:LanguageToolSummary*
 

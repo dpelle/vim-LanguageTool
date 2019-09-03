@@ -109,7 +109,7 @@ function! LanguageTool#errors#fix(error, sug_id) "{{{1
     call win_gotoid(a:error.source_win)
     " This is temporary, we might want to use / only if it is not present
     " in any of l:location_regex and l:fix
-    execute 's/' . l:location_regex . '/' . l:fix . '/'
+    execute a:error.fromy . ',' . a:error.toy . 's/' . l:location_regex . '/' . l:fix . '/'
 endfunction
 
 " This function is used on the description of an error to get the underlying data
