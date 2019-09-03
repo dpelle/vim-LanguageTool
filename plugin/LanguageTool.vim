@@ -30,13 +30,6 @@ endif
 let g:loaded_languagetool = "1"
 " }}}1
 
-" Highligths {{{1
-hi def link LanguageToolErrorCount    Title
-hi def link LanguageToolLabel         Label
-hi def link LanguageToolUrl           Underlined
-hi def link LanguageToolGrammarError  Error
-hi def link LanguageToolSpellingError WarningMsg
-
 " Menu items {{{1
 if has("gui_running") && has("menu") && &go =~# 'm'
   amenu <silent> &Plugin.LanguageTool.Chec&k :LanguageToolCheck<CR>
