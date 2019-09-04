@@ -196,6 +196,8 @@ function! LanguageTool#summary() "{{{1
                 \ LanguageTool#errors#errorAtPoint(),
                 \ LanguageTool#errors#suggestionAtPoint())<CR>
     nnoremap <buffer><silent> q :q<CR>
+    nnoremap <buffer><silent> ]] :execute LanguageTool#errors#nextSummary()<CR>
+    nnoremap <buffer><silent> [[ :execute LanguageTool#errors#previousSummary()<CR>
 
     setlocal filetype=languagetool
     setlocal buftype=nowrite bufhidden=wipe nobuflisted noswapfile nowrap nonumber norelativenumber noma

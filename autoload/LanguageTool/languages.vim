@@ -59,10 +59,6 @@ endfunction
 
 " This functions prints all languages supported by the server
 function! LanguageTool#languages#supportedLanguages() "{{{1
-    if !exists('s:languagetool_setup_done')
-        echoerr 'LanguageTool not initialized, please run :LanguageToolSetUp'
-        return -1
-    endif
 
     if !exists('s:supported_languages')
         let s:supported_languages = LanguageTool#server#get()

@@ -155,3 +155,14 @@ function! LanguageTool#errors#jumpToCurrentError() "{{{1
         norm! zz
     endif
 endfunction
+
+" This function returns the line number of the previous start of error summary
+function! LanguageTool#errors#previousSummary()
+    return search('^Error:\s\+', 'bn')
+endfunction
+
+
+" This function returns the line number of the next start of error summary
+function! LanguageTool#errors#nextSummary()
+    return search('^Error:\s\+', 'n')
+endfunction

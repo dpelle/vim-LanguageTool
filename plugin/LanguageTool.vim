@@ -49,7 +49,7 @@ command! -bar -nargs=0 LanguageToolCheck :call LanguageTool#check()
 command! -bar -nargs=0 LanguageToolErrorAtPoint :call LanguageTool#showErrorAtPoint()
 command! -nargs=0 LanguageToolSummary :call LanguageTool#summary()
 command! -nargs=0 LanguageToolSetUp :call LanguageTool#setup()
-command! -nargs=0 LanguageToolSupportedLanguages :call LanguageTool#supportedLanguages()
+command! -nargs=0 LanguageToolSupportedLanguages :call LanguageTool#languages#supportedLanguages()
 command! -nargs=0 -count=0 LanguageToolFixAtPoint :call LanguageTool#fixErrorAtPoint(<count>)
 
 " Autocommands {{{1
