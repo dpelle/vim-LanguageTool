@@ -187,10 +187,8 @@ function! LanguageTool#check() "{{{1
     " Also highlight errors in original buffer and populate location list.
     setlocal errorformat=%f:%l:%c:%m
     for l:error in b:errors
-        let l:re = LanguageTool#errors#highlightRegex(l:error.fromy,
-        \                                       l:error.context.text,
-        \                                       l:error.context.offset,
-        \                                       l:error.context.length)
+        let l:re = LanguageTool#errors#highlightRegex(l:error.fromy, l:error)
+
         if l:error.rule.id =~# 'HUNSPELL_RULE\|HUNSPELL_NO_SUGGEST_RULE\|MORFOLOGIK_RULE_\|_SPELLING_RULE\|_SPELLER_RULE'
             call matchadd('LanguageToolSpellingError', l:re)
         else
@@ -237,6 +235,8 @@ function! LanguageTool#showErrorAtPoint() "{{{1
         pedit LanguageTool
         wincmd P
         setlocal modifiable
+
+        call clearmatches()
 
         call LanguageTool#errors#prettyprint(l:error)
 

@@ -40,7 +40,7 @@ faster and better integrated with Vim.
 
 See http://www.languagetool.org/ for more information about LanguageTool.
 
-This plugin requieres `curl` to work.
+Warning: This plugin requieres `curl` to work.
 
 ============================================================================
 
@@ -231,6 +231,8 @@ hi LanguageToolSpellingError guisp=red  gui=undercurl guifg=NONE guibg=NONE cter
 
 6. Features                                           *languagetool-features*
 
+Commands~
+
 The LanguageTool plugin defines the following commands:
     |:LanguageToolCheck|
     |:LanguageToolClean|
@@ -280,17 +282,20 @@ This command uses [count]th suggestion to fix error at point (starting at
 index 0).
 Without [count] the command is the same as `:0LanguageToolFixAtPoint`.
 Warning: When fixing errors, the suggestions might change line arrangement
-(e.g. deleting newlines, ...) this will cause all errors bellow this point to
-not match anymore. Rearranging the lines as they were before fixing should
-solve the issue.
+(e.g. deleting newlines, adding character...) this will cause all errors
+bellow this point to not match anymore. Rearranging the lines as they were
+before fixing should solve the issue.
+Note: Another solution is to fix the errors in reverse order, so that solving
+errors in the beginning of the document don't affect following error.
+Note: If errors still don't work as expected, rerun `:LanguageToolCheck`.
 
 :LanguageToolSummary                                 *:LanguageToolSummary*
 
 This command opens the summary window, which prints out all gramatical
 mistakes in the document.
 You can navigate them and see the suggestions.
-When on a given mistake, hitting <CR> will bring you the mistake, and
-hitting `f` on a suggestion will use this suggestion to fix the mistake.
+When on a given mistake, hitting <CR> will bring you the mistake.
+Hitting `f` on a suggestion will use this suggestion to fix the mistake.
 
 Using the Location-list~
 

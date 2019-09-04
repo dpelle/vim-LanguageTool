@@ -52,13 +52,7 @@ function! LanguageTool#errors#prettyprint(error) "{{{1
     call append(line('.') - 1, 'Message:    '     . a:error.message)
     call append(line('.') - 1, 'Context:    ' . a:error.context.text)
 
-    call clearmatches()
-
-    let l:re = LanguageTool#errors#highlightRegex(
-                \ line('.') - 1,
-                \ a:error.context.text,
-                \ a:error.context.offset,
-                \ a:error.context.length)
+    let l:re = LanguageTool#errors#highlightRegex(line('.') - 1, a:error)
 
     if a:error.rule.id =~# 'HUNSPELL_RULE\|HUNSPELL_NO_SUGGEST_RULE\|MORFOLOGIK_RULE_\|_SPELLING_RULE\|_SPELLER_RULE'
         call matchadd('LanguageToolSpellingError', l:re)
@@ -80,30 +74,38 @@ endfunction
 " Return a regular expression used to highlight a grammatical error
 " at line a:line in text.  The error starts at character a:start in
 " context a:context and its length in context is a:len.
-function! LanguageTool#errors#highlightRegex(line, context, start, len)  "{{{1
-  let l:start_idx     = byteidxcomp(a:context, a:start)
-  let l:end_idx       = byteidxcomp(a:context, a:start + a:len) - 1
-  let l:start_ctx_idx = byteidxcomp(a:context, a:start + a:len)
-  let l:end_ctx_idx   = byteidxcomp(a:context, a:start + a:len + 5) - 1
+function! LanguageTool#errors#highlightRegex(line, error)  "{{{1
+    let l:start_idx     = byteidxcomp(a:error.context.text, a:error.context.offset)
+    let l:end_idx       = byteidxcomp(a:error.context.text, a:error.context.offset + a:error.context.length) - 1
+    let l:start_ctx_idx = byteidxcomp(a:error.context.text, a:error.context.offset + a:error.context.length)
+    let l:end_ctx_idx   = byteidxcomp(a:error.context.text, a:error.context.offset + a:error.context.length + 5) - 1
 
-  " The substitute allows matching errors which span multiple lines.
-  " The part after \ze gives a bit of context to avoid spurious
-  " highlighting when the text of the error is present multiple
-  " times in the line.
-  return '\V'
-  \     . '\%' . a:line . 'l'
-  \     . substitute(escape(a:context[l:start_idx : l:end_idx], "'\\"), ' ', '\\_\\s', 'g')
-  \     . '\ze'
-  \     . substitute(escape(a:context[l:start_ctx_idx : l:end_ctx_idx], "'\\"), ' ', '\\_\\s', 'g')
+    " The location prefix is used to match only at the point of the actual
+    " error and not multiple times accross the line/text
+    if a:line != a:error.fromy
+        let l:location_prefix = '\%' . a:line . 'l\&'
+    elseif a:error.fromy == a:error.toy
+        let l:location_prefix = '\%' . a:error.fromy . 'l'
+                    \ . '\%>' . (a:error.fromx - 1) . 'c'
+                    \ . '\%<' . (a:error.tox + 1) . 'c'
+                    \ . '\&'
+    else
+        let l:location_prefix = '\(\%' . a:error.fromy . 'l\%>' . (a:error.fromx - 1) . 'c\|'
+                    \ . '\%>' . a:error.fromy . 'l\%<' . a:error.toy . 'l\|'
+                    \ . '\%' . a:error.toy . 'l\%<' . (a:error.tox + 1) . 'c\)\&'
+    endif
+
+    " The substitute allows matching errors which span multiple lines.
+    " We use \< and \> because all errors start at the beginning of
+    " a word and end at the end of a word
+    return  '\V' . l:location_prefix . '\<'
+    \     . substitute(escape(a:error.context.text[l:start_idx : l:end_idx], "'\\"), ' ', '\\_\\s', 'g')
+    \     . '\>\ze'
 endfunction
 
 " This function uses suggestion sug_id to fix error error
 function! LanguageTool#errors#fix(error, sug_id) "{{{1
-    let l:location_regex = LanguageTool#errors#highlightRegex(
-                \ a:error.fromy,
-                \ a:error.context.text,
-                \ a:error.context.offset,
-                \ a:error.context.length)
+    let l:location_regex = LanguageTool#errors#highlightRegex(a:error.fromy, a:error)
     let l:fix = a:error.replacements[a:sug_id].value
 
     call win_gotoid(a:error.source_win)

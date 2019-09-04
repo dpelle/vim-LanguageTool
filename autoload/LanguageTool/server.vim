@@ -61,7 +61,7 @@ function s:urlEncodeNotEmpty(string, prefix) " {{{1
 endfunction
 
 " This function is used to send requests to the server
-function! LanguageTool#server#send(method, endpoint, data)
+function! LanguageTool#server#send(method, endpoint, data) "{{{1
     if !exists('s:lt_server_started')
         echoerr 'LanguageTool server not started, please run :LanguageToolSetUp'
         return {}
