@@ -1,6 +1,8 @@
 vim-LanguageTool
 ----------------
 
+![](https://asciinema.org/a/265931)
+
 This plugin integrates the LanguageTool grammar checker into Vim.
 LanguageTool is an Open Source style and grammar checker for English,
 French, German, etc. See http://www.languagetool.org/languages/ for a
@@ -20,15 +22,6 @@ with LanguageTool. On the other hand, the Vim native spelling checker is
 faster and better integrated with Vim.
 
 See http://www.languagetool.org/ for more information about LanguageTool.
-
-# Screenshots
-
-These screenshots will give you an idea of what the LanguageTool plugin does:
-English
-
-![English](http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_en.png)
-
-![French](http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_fr.png)
 
 # Usage
 
