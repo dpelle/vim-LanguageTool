@@ -23,58 +23,6 @@
 " (see ":help copyright" except use "LanguageTool.vim" instead of "Vim").
 "
 " }}} 1
-" This function is used to know if the language is supported or not by the running languagetool server
-function! s:languageIsSupported(lang) "{{{1
-    if !exists('s:supported_languages')
-        let s:supported_languages = LanguageTool#server#get()
-    endif
-
-    for l:language in s:supported_languages
-        if a:lang ==? l:language.longCode
-            return 1
-        endif
-    endfor
-
-    return 0
-endfunction
-
-" Guess language from 'a:lang' (either 'spelllang' or 'v:lang')
-function! s:FindLanguage(lang) "{{{1
-  " This replaces things like en_gb en-GB as expected by LanguageTool,
-  " only for languages that support variants in LanguageTool.
-  let l:language = substitute(substitute(a:lang,
-  \  '\(\a\{2,3}\)\(_\a\a\)\?.*',
-  \  '\=tolower(submatch(1)) . toupper(submatch(2))', ''),
-  \  '_', '-', '')
-
-  if s:languageIsSupported(l:language)
-    return l:language
-  endif
-
-  " Removing the region (if any) and trying again.
-  let l:language = substitute(l:language, '-.*', '', '')
-  return s:languageIsSupported(l:language) ? l:language : ''
-endfunction
-
-" This functions prints all languages supported by the server
-function! LanguageTool#supportedLanguages() "{{{1
-    if !exists('s:languagetool_setup_done')
-        echoerr 'LanguageTool not initialized, please run :LanguageToolSetUp'
-        return -1
-    endif
-
-    if !exists('s:supported_languages')
-        let s:supported_languages = LanguageTool#server#get()
-    endif
-
-    let l:language_list = []
-
-    for l:language in s:supported_languages
-        call add(l:language_list, l:language.name . ' [' . l:language.longCode . ']')
-    endfor
-
-    echomsg join(l:language_list, ', ')
-endfunction
 
 " Set up configuration.
 " Returns 0 if success, < 0 in case of error.
@@ -111,9 +59,9 @@ function! LanguageTool#setupFinish() "{{{1
         let s:languagetool_lang = g:languagetool_lang
     else
         " Trying to guess language from 'spelllang' or 'v:lang'.
-        let s:languagetool_lang = s:FindLanguage(&spelllang)
+        let s:languagetool_lang = LanguageTool#languages#findLanguage(&spelllang)
         if s:languagetool_lang == ''
-            let s:languagetool_lang = s:FindLanguage(v:lang)
+            let s:languagetool_lang = LanguageTool#languages#findLanguage(v:lang)
             if s:languagetool_lang == ''
                 echoerr 'Failed to guess language from spelllang=['
                 \ . &spelllang . '] or from v:lang=[' . v:lang . ']. '
@@ -141,8 +89,6 @@ function! LanguageTool#check() "{{{1
 
     " Using window ID is more reliable than window number.
     " But win_getid() does not exist in old version of Vim.
-    let l:languagetool_text_winid = exists('*win_getid')
-    \                             ? win_getid() : winnr()
     let l:file_content = system('cat ' . expand('%'))
 
     let data = {
@@ -154,51 +100,7 @@ function! LanguageTool#check() "{{{1
               \ 'text' : l:file_content
               \ }
 
-    let output = LanguageTool#server#check(data)
-
-    if empty(output)
-        return -1
-    endif
-
-    " Loop on all errors in output of LanguageTool and
-    " collect information about all errors in list s:errors
-    let b:errors = output.matches
-    let l:index = 0
-    for l:error in b:errors
-
-        " There be dragons, this is true blackmagic happening here, we hardpatch offset field of LT
-        " {from|to}{x|y} are not provided by LT JSON API, thus we have to compute them
-        let l:start_byte_index = byteidxcomp(l:file_content, l:error.offset) + 2 " All errrors are offsetted by 2
-        let l:error.fromy = byte2line(l:start_byte_index)
-        let l:error.fromx = l:start_byte_index - line2byte(l:error.fromy)
-        let l:error.start_byte_idx = l:start_byte_index
-
-        let l:stop_byte_index = byteidxcomp(l:file_content, l:error.offset + l:error.length) + 2
-        let l:error.toy = byte2line(l:stop_byte_index)
-        let l:error.tox = l:stop_byte_index - line2byte(l:error.toy)
-        let l:error.stop_byte_idx = l:stop_byte_index
-
-        let l:error.source_win = l:languagetool_text_winid
-        let l:error.index = l:index
-        let l:index = l:index + 1
-        let l:error.nr_errors = len(b:errors)
-    endfor
-
-    " Also highlight errors in original buffer and populate location list.
-    setlocal errorformat=%f:%l:%c:%m
-    for l:error in b:errors
-        let l:re = LanguageTool#errors#highlightRegex(l:error.fromy, l:error)
-
-        if l:error.rule.id =~# 'HUNSPELL_RULE\|HUNSPELL_NO_SUGGEST_RULE\|MORFOLOGIK_RULE_\|_SPELLING_RULE\|_SPELLER_RULE'
-            call matchadd('LanguageToolSpellingError', l:re)
-        else
-            call matchadd('LanguageToolGrammarError', l:re)
-        endif
-        laddexpr expand('%') . ':'
-        \ . l:error.fromy . ':'  . l:error.fromx . ':'
-        \ . l:error.rule.id . ' : ' . l:error.message
-    endfor
-    return 0
+    call LanguageTool#server#check(data, function('LanguageTool#check#callback'))
 endfunction
 
 " This function clears syntax highlighting created by LanguageTool plugin

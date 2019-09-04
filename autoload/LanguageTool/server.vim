@@ -52,6 +52,7 @@ function LanguageTool#server#stdoutHandler(job_id, stdout, event) "{{{1
         echomsg 'LanguageTool server started'
         let s:lt_server_started = 1
         call LanguageTool#setupFinish()
+        doautocmd User LanguageToolServerStarted
     endif
 endfunction
 
@@ -61,7 +62,36 @@ function s:urlEncodeNotEmpty(string, prefix) " {{{1
 endfunction
 
 " This function is used to send requests to the server
-function! LanguageTool#server#send(method, endpoint, data) "{{{1
+function! LanguageTool#server#send(method, endpoint, data, callback) "{{{1
+    if !exists('s:lt_server_started')
+        echoerr 'LanguageTool server not started, please run :LanguageToolSetUp'
+        call a:callback({})
+    endif
+
+    let l:languagetool_cmd = 'curl -X ' . a:method . ' -s'
+                \ . ' --header "Content-Type: application/x-www-form-urlencoded"'
+                \ . ' --header "Accept: application/json"'
+                \ . a:data
+                \ . ' http://localhost:' . s:languagetool_port . '/v2/' . a:endpoint
+
+    " Let json magic happen
+    if s:lt_server_started
+        let output_str = jobstart(l:languagetool_cmd, {'on_stdout' : function('LanguageTool#server#sendCallback', [a:callback])})
+    else
+        echomsg 'LanguageTool server offline...'
+        call a:callback({})
+    endif
+endfunction
+
+" This function is the callback for the send function, it calls callback with parsed json
+" data as argument
+function! LanguageTool#server#sendCallback(callback, job_id, data, event) "{{{1
+    if a:event == 'stdout' && !empty(join(a:data))
+        call a:callback(json_decode(join(a:data)))
+    endif
+endfunction
+
+function! LanguageTool#server#send_sync(method, endpoint, data) "{{{1
     if !exists('s:lt_server_started')
         echoerr 'LanguageTool server not started, please run :LanguageToolSetUp'
         return {}
@@ -81,7 +111,7 @@ function! LanguageTool#server#send(method, endpoint, data) "{{{1
         let output_str = system(l:languagetool_cmd)
     else
         echomsg 'LanguageTool server offline...'
-        return -1
+        return {}
     endif
 
     if v:shell_error
@@ -101,7 +131,7 @@ endfunction
 
 " This function is used to send data to the server, for now this is sync, but it will get async
 " it returns the result as the vim dict corresponding to the json answer of the server
-function! LanguageTool#server#check(data) "{{{1
+function! LanguageTool#server#check(data, callback) "{{{1
     let l:request = s:urlEncodeNotEmpty(a:data.disabledRules, 'disabledRules')
                 \ . s:urlEncodeNotEmpty(a:data.enabledRules, 'enabledRules')
                 \ . s:urlEncodeNotEmpty(a:data.disabledCategories, 'disabledCategories')
@@ -109,10 +139,10 @@ function! LanguageTool#server#check(data) "{{{1
                 \ . s:urlEncodeNotEmpty(a:data.language, 'language')
                 \ . ' --data-urlencode "text=' . escape(a:data.text, '$"\') . '"'
 
-    return LanguageTool#server#send('POST', 'check', l:request)
+    call LanguageTool#server#send('POST', 'check', l:request, a:callback)
 endfunction
 
 " This funcion gets the supported languages of LanguageTool using the server
 function! LanguageTool#server#get() "{{{1
-    return LanguageTool#server#send('GET', 'languages', '')
+    return LanguageTool#server#send_sync('GET', 'languages', '')
 endfunction

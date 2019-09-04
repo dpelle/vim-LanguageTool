@@ -252,7 +252,9 @@ command before running |:LanguageToolCheck|.
 Use the |:LanguageToolCheck| command to check the grammar in the current
 buffer. This will highlight errors in the buffer and populate the
 location-list for the window.
-Befor running this command you need to run |:LanguageToolSetUp|
+Before running this command you need to run |:LanguageToolSetUp|
+Note: After check is done, a |LanguageToolCheckDone| user event will be
+triggered.
 
 :LanguageToolClear                                       *:LanguageToolClear*
 
@@ -287,7 +289,7 @@ bellow this point to not match anymore. Rearranging the lines as they were
 before fixing should solve the issue.
 Note: Another solution is to fix the errors in reverse order, so that solving
 errors in the beginning of the document don't affect following error.
-Note: If errors still don't work as expected, rerun `:LanguageToolCheck`.
+Note: If errors still don't work as expected, rerun |:LanguageToolCheck|.
 
 :LanguageToolSummary                                 *:LanguageToolSummary*
 
@@ -297,6 +299,19 @@ You can navigate them and see the suggestions.
 When on a given mistake, hitting <CR> will bring you the mistake.
 Hitting `f` on a suggestion will use this suggestion to fix the mistake.
 
+Events~
+
+LanguageTool provides some events to help customizing the behavior of the
+plugin :
+    |LanguageToolCheckDone|
+    |LanguageToolServerStarted|
+
+Those two events are available as |User| events.
+Let's say you want the summary window to open whenever a check has been done,
+you can do it like this :
+>
+    autocommand User LanguageToolCheckDone LanguageToolSummary
+<
 Using the Location-list~
 
 The |location-list| is populated when running |:LanguageToolCheck|. So you can
