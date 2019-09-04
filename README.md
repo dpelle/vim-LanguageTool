@@ -1,5 +1,5 @@
-vim-LanguageTool
-----------------
+LanguageTool.nvim
+-----------------
 
 ![Usage Example](languagetool.gif)
 
@@ -27,14 +27,15 @@ See http://www.languagetool.org/ for more information about LanguageTool.
 
 * Use `:LanguageToolCheck` to check grammar in the current buffer.
   This will check for grammar mistakes and highlight grammar or
-  spelling mistakes. It also opens a new scratch window with the
-  list of errors with further explanations about each error.
-  Pressing <Enter> in an error in the scratch buffer will jump to
-  that error in the text. The location list for the buffer being
+  spelling mistakes. The location list for the buffer being
   checked is also populated, so you can use location commands
   such as `:lopen` to open the location list window, `:lne` to
   jump to the next error, etc.
 
+* Use `:LanguageToolSummary` to open a summary window where you can navigate
+  errors using `]]` and `[[`, jump to them by hit `<CR>` and fix them by hitting
+  `f` on a suggestion.
+  
 * Use `:LanguageToolClear` to remove highlighting of grammar
   mistakes, close the scratch window containing the list of errors,
   clear and close the location list.
@@ -53,23 +54,11 @@ Plugin -> LanguageTool -> Check
 ## Installing vim-LanguageTool with a plugin manager
 
 You can use any popular plugin manager according to your preference.
-For example, with [Vundle](https://github.com/VundleVim/Vundle.vim),
+For example, with [vim-plug](https://github.com/junegunn/vim-plug),
 add this line in your `.vimrc`:
 ```
-Plugin 'dpelle/vim-LanguageTool'
-
+Plug 'vigoux/LanguageTool.nvim'
 ```
-
-## Installing vim-LanguageTool without a plugin manager
-
-If you don't use a plugin manager, copy those files in your `$HOME/.vim/`
-directory:
-```
-  .vim/plugin/LanguageTool.vim
-  .vim/doc/LanguageToo.doc
-
-```
-And run `vim -c 'helptags ~/.vim/doc'`.
 
 # Download LanguageTool
 
@@ -197,6 +186,12 @@ hi LanguageToolSpellingError guisp=red  gui=undercurl guifg=NONE guibg=NONE cter
 Just add the following lines to you `.vimrc`:
 ```vim
 autocmd User LanguageToolCheckDone LanguageToolSummary
+```
+
+## I want the server to start whenever I open a certain filetype
+Add this to your `.vimrc` (this example is for `latex` files)
+```vim
+autocmd Filetype tex LanguageToolSetUp
 ```
 
 # License
