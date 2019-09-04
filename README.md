@@ -1,7 +1,6 @@
 LanguageTool.nvim
 -----------------
-
-![Usage Example](languagetool.gif)
+[![asciicast](https://asciinema.org/a/265931.svg)](https://asciinema.org/a/265931)
 
 This plugin integrates the LanguageTool grammar checker into Vim.
 LanguageTool is an Open Source style and grammar checker for English,
