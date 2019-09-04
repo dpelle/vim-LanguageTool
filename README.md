@@ -1,7 +1,7 @@
 vim-LanguageTool
 ----------------
 
-<script id="asciicast-265931" src="https://asciinema.org/a/265931.js" async></script>
+![Usage Example](languagetool.gif)
 
 This plugin integrates the LanguageTool grammar checker into Vim.
 LanguageTool is an Open Source style and grammar checker for English,
