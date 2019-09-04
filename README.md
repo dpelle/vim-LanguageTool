@@ -41,10 +41,6 @@ English
   checked is also populated, so you can use location commands
   such as `:lopen` to open the location list window, `:lne` to
   jump to the next error, etc.
-  The `:LanguageToolCheck` command accepts a range. You can for example check
-  grammar between lines 100 and 200 in buffer with `:100,200LanguageToolCheck`,
-  or check grammar in the visual selection with `:<',>'LanguageToolCheck`.
-  The default range is 1,$ (whole buffer).
 
 * Use `:LanguageToolClear` to remove highlighting of grammar
   mistakes, close the scratch window containing the list of errors,
@@ -129,7 +125,7 @@ LanguageTool can then be downloaded and built with Maven as follows:
 ```
 After the build, the command line version of LanguageTool can be found in:
 ```
-  ./languagetool-standalone/target/LanguageTool-3.7-SNAPSHOT/LanguageTool-3.7-SNAPSHOT/languagetool-commandline.jar
+  ./languagetool-standalone/target/LanguageTool-3.7-SNAPSHOT/LanguageTool-3.7-SNAPSHOT/languagetool-server.jar
 ```
 The version number in the path can vary.
 
@@ -160,53 +156,8 @@ For languages with variants (currently English German and Portuguese), it is
 necessary to specify the variant in order for LanguageTool to signal spelling
 errors. In other words, with  :set spelllang=en  LanguageTool only signals
 grammar mistakes whereas with  :set spellllang=en_us LanguageTool signals
-spelling mistakes and grammar mistakes. The valid language codes are:
-
-```
-ast    Asturian
-be     Belarusian
-br     Breton
-ca     Catalan
-cs     Czech
-da     Danish
-de     German
-de-AT  German  (Austria)
-de-CH  German  (Switzerland)
-de-DE  German  (Germany)
-el     Greek
-en     English
-en-AU  English (Australia)
-en-CA  English (Canada)
-en-GB  English (Great Britain)
-en-NZ  English (New Zealand)
-en-US  English (US)
-en-ZA  English (South Africa)
-eo     Esperanto
-es     Spanish
-fa     Persian
-fr     French
-gl     Galician
-is     Icelandic
-it     Italian
-ja     Japanese
-km     Khmer
-lt     Lithuanian
-ml     Malayalam
-nl     Dutch
-pl     Polish
-pt     Portuguese
-pt-BR  Portuguese (Brazil)
-pt-PT  Portuguese (Portugal)
-ro     Romanian
-ru     Russian
-sk     Slovak
-sl     Slovenian
-sv     Swedish
-ta     Tamil
-tl     Tagalog
-uk     Ukrainian
-zh     Chinese
-```
+spelling mistakes and grammar mistakes.
+Valid language code are provided by `:LanguageToolSupportedLanguages`
 
 ## `g:languagetool_disable_rules`
 
@@ -245,6 +196,14 @@ colorscheme:
 ```
 hi LanguageToolGrammarError  guisp=blue gui=undercurl guifg=NONE guibg=NONE ctermfg=white ctermbg=blue term=underline cterm=none
 hi LanguageToolSpellingError guisp=red  gui=undercurl guifg=NONE guibg=NONE ctermfg=white ctermbg=red  term=underline cterm=none
+```
+
+# FAQ
+
+## I want the summary window to open whenever a check is done.
+Just add the following lines to you `.vimrc`:
+```vim
+autocmd User LanguageToolCheckDone LanguageToolSummary
 ```
 
 # License
