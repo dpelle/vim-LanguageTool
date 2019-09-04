@@ -2,7 +2,7 @@
 " Maintainer:   Dominique Pellé <dominique.pelle@gmail.com>
 " Screenshots:  http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_en.png
 "               http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_fr.png
-" Last Change:  2019 Sep 03
+" Last Change:  2019 Sep 04
 " Version:      1.32
 "
 " Long Description: {{{1
@@ -97,7 +97,8 @@ function! LanguageTool#check() "{{{1
               \ 'disabledCategories' : s:languagetool_disable_categories,
               \ 'enabledCategories' : s:languagetool_enable_categories,
               \ 'language' : s:languagetool_lang,
-              \ 'text' : l:file_content
+              \ 'text' : l:file_content,
+              \ 'file' : '%'
               \ }
 
     call LanguageTool#server#check(data, function('LanguageTool#check#callback'))

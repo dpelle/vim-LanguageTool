@@ -255,6 +255,8 @@ location-list for the window.
 Before running this command you need to run |:LanguageToolSetUp|
 Note: After check is done, a |LanguageToolCheckDone| user event will be
 triggered.
+Warning: LanguageTool don't behave well with tabs, if you encounter errors
+when using |:LanguageToolCheck| consider replacing tabs by spaces.
 
 :LanguageToolClear                                       *:LanguageToolClear*
 

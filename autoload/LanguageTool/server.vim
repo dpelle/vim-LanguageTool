@@ -2,7 +2,7 @@
 " Maintainer:   Dominique Pellé <dominique.pelle@gmail.com>
 " Screenshots:  http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_en.png
 "               http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_fr.png
-" Last Change:  2019 Aug 30
+" Last Change:  2019 Sep 04
 " Version:      1.32
 "
 " Long Description: {{{1
@@ -137,7 +137,7 @@ function! LanguageTool#server#check(data, callback) "{{{1
                 \ . s:urlEncodeNotEmpty(a:data.disabledCategories, 'disabledCategories')
                 \ . s:urlEncodeNotEmpty(a:data.enabledCategories, 'enabledCategories')
                 \ . s:urlEncodeNotEmpty(a:data.language, 'language')
-                \ . ' --data-urlencode "text=' . escape(a:data.text, '$"\') . '"'
+                \ . ' --data-urlencode "data={\"annotation\":[' . escape(LanguageTool#preprocess#getProcessedText(a:data.file), '$"\') . ']}"'
 
     call LanguageTool#server#send('POST', 'check', l:request, a:callback)
 endfunction
