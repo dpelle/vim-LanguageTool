@@ -165,49 +165,50 @@ of the LanguageTool plugin.
 
 g:languagetool_server                                 *g:languagetool_server*
 
-  This variable specifies the location of the LanguageTool java grammar
-  checker server. Default is `$HOME/languagetool/languagetool-server.jar`.
+This variable specifies the location of the LanguageTool java grammar
+checker server. Default is `$HOME/languagetool/languagetool-server.jar`.
 
-  Example: >
+Example: >
 
   :let g:languagetool_server='$HOME/languagetool/languagetool-standalone/target/LanguageTool-4.3-SNAPSHOT/LanguageTool-4.3-SNAPSHOT/languagetool-server.jar'
 
 g:languagetool_port
 
-  This variable specifies the port that will be used by the server.
-  Default value is `8081`.
+This variable specifies the port that will be used by the server.
+Default value is `8081`.
 
-g:languagetool_lang                                     *g:languagetool_lang*
+g:languagetool                                            *g:languagetool*
 
-  The language code to use for the language tool checker. If undefined,
-  plugin tries to guess the language of the Vim spelling checker
-  'spelllang' or v:lang. If neither works, plugin defaults to
-  English US (en-US). Starting with LanguageTool-1.8, regional variants
-  of some languages can be specified. For languages with variants
-  (currently English German and Portuguese), it is necessary to specify the
-  variant in order for LanguageTool to signal spelling errors. In other
-  words, with  :set spelllang=en  LanguageTool only signals grammar
-  mistakes whereas with  :set spelllang=en_us LanguageTool signals
-  spelling mistakes and grammar mistakes.
-  Valid language codes are provided by `:LanguageToolSupportedLanguages`
+All LanguageTool configuration goes through this varaible, which is organized
+as follows (all lists are comma separated):
+>
+    g:languagetool = {
+        '.' : {
+            {model1} for all filetypes
+        },
+        'my_filetype' : {
+            {model1} for my_filetype
+        }
+    }
 
-g:languagetool_disable_rules                   *g:languagetool_disable_rules*
+    {model1} = {
+        'enabledRules' : list of enabled rules,
+        'disabledRules' : list of disabled rules,
+        'enabledCategories' : list of enabled categories,
+        'disabledCategories' : list of disabled categories,
+        'language' : the code of the language to check,
+            as given by :LanguageToolSupportedLanguages
+    }
 
-  This variable specifies checker rules which are disabled. Each disabled
-  rule must be comma separated.
-  Default value set by plugin is: WHITESPACE_RULE,EN_QUOTES
+<
+Actually, there is more options than those found here, you can found an
+exhaustive list here :
+https://languagetool.org/http-api/swagger-ui/#!/default/post_check
 
-g:languagetool_enable_rules                     *g:languagetool_enable_rules*
-
-  This variable specifies checker rules which are enabled.
-
-g:languagetool_disable_categories         *g:languagetool_disable_categories*
-
-  This variable specifies checker rule-categories which are disabled.
-
-g:languagetool_enable_categories           *g:languagetool_enable_categories*
-
-  This variable specifies checker rule-categories which are enabled.
+Note: |g:languagetool| keys are actually used as regex, so you can take this
+in account to configure languagetool for a group of filetypes.
+To match for a filetype only, use its full name, if it can submatch something,
+add '^' at the start and '$' at the end of the key.
 
 You can also customize the following syntax highlighting groups: >
 

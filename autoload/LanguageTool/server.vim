@@ -2,7 +2,7 @@
 " Maintainer:   Dominique Pellé <dominique.pelle@gmail.com>
 " Screenshots:  http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_en.png
 "               http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_fr.png
-" Last Change:  2019 Sep 04
+" Last Change:  2019 Sep 09
 " Version:      1.32
 "
 " Long Description: {{{1
@@ -51,7 +51,6 @@ function LanguageTool#server#stdoutHandler(job_id, stdout, event) "{{{1
     if string(a:stdout) =~? 'Server started'
         echomsg 'LanguageTool server started'
         let s:lt_server_started = 1
-        call LanguageTool#setupFinish()
         doautocmd User LanguageToolServerStarted
     endif
 endfunction
@@ -132,12 +131,13 @@ endfunction
 " This function is used to send data to the server, for now this is sync, but it will get async
 " it returns the result as the vim dict corresponding to the json answer of the server
 function! LanguageTool#server#check(data, callback) "{{{1
-    let l:request = s:urlEncodeNotEmpty(a:data.disabledRules, 'disabledRules')
-                \ . s:urlEncodeNotEmpty(a:data.enabledRules, 'enabledRules')
-                \ . s:urlEncodeNotEmpty(a:data.disabledCategories, 'disabledCategories')
-                \ . s:urlEncodeNotEmpty(a:data.enabledCategories, 'enabledCategories')
-                \ . s:urlEncodeNotEmpty(a:data.language, 'language')
-                \ . ' --data-urlencode "data={\"annotation\":[' . escape(LanguageTool#preprocess#getProcessedText(a:data.file), '$"\') . ']}"'
+    let l:request = ' --data-urlencode "data={\"annotation\":[' . escape(LanguageTool#preprocess#getProcessedText(a:data.file), '$"\') . ']}"'
+
+    for [l:key, l:value] in items(a:data)
+        if l:key !=? 'file'
+            let l:request .= s:urlEncodeNotEmpty(l:value, l:key)
+        endif
+    endfor
 
     call LanguageTool#server#send('POST', 'check', l:request, a:callback)
 endfunction

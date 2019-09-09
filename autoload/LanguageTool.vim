@@ -2,7 +2,7 @@
 " Maintainer:   Dominique Pellé <dominique.pelle@gmail.com>
 " Screenshots:  http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_en.png
 "               http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_fr.png
-" Last Change:  2019 Sep 04
+" Last Change:  2019 Sep 09
 " Version:      1.32
 "
 " Long Description: {{{1
@@ -27,12 +27,6 @@
 " Set up configuration.
 " Returns 0 if success, < 0 in case of error.
 function! LanguageTool#setup() "{{{1
-    let s:languagetool_disable_rules = get(g:, 'languagetool_disable_rules', 'WHITESPACE_RULE,EN_QUOTES')
-    let s:languagetool_enable_rules = get(g:, 'languagetool_enable_rules', '')
-    let s:languagetool_disable_categories = get(g:, 'languagetool_disable_categories', '')
-    let s:languagetool_enable_categories = get(g:, 'languagetool_enable_categories', '')
-    let s:languagetool_encoding = &fenc ? &fenc : &enc
-
     let s:languagetool_server = get(g:, 'languagetool_server', $HOME . '/languagetool/languagetool-server.jar')
 
     if !filereadable(expand(s:languagetool_server))
@@ -44,33 +38,7 @@ function! LanguageTool#setup() "{{{1
 
     call LanguageTool#server#start(s:languagetool_server)
 
-    let s:languagetool_setup_done = 1
-
     return 0
-endfunction
-
-" Sets up the plugin, but after server startup
-" This function is called by server stdout handler just
-" after server starts
-function! LanguageTool#setupFinish() "{{{1
-
-    " Setting up language...
-    if exists('g:languagetool_lang')
-        let s:languagetool_lang = g:languagetool_lang
-    else
-        " Trying to guess language from 'spelllang' or 'v:lang'.
-        let s:languagetool_lang = LanguageTool#languages#findLanguage(&spelllang)
-        if s:languagetool_lang == ''
-            let s:languagetool_lang = LanguageTool#languages#findLanguage(v:lang)
-            if s:languagetool_lang == ''
-                echoerr 'Failed to guess language from spelllang=['
-                \ . &spelllang . '] or from v:lang=[' . v:lang . ']. '
-                \ . 'Defaulting to English (en-US). '
-                \ . 'See ":help LanguageTool" regarding setting g:languagetool_lang.'
-                let s:languagetool_lang = 'en-US'
-            endif
-        endif
-    endif
 endfunction
 
 " This function performs grammar checking of text in the current buffer.
@@ -81,25 +49,14 @@ endfunction
 " the range of line to check.
 " Returns 0 if success, < 0 in case of error.
 function! LanguageTool#check() "{{{1
-    if !exists('s:languagetool_setup_done')
-        echoerr 'LanguageTool not initialized, please run :LanguageToolSetUp'
-        return -1
-    endif
     call LanguageTool#clear()
 
     " Using window ID is more reliable than window number.
     " But win_getid() does not exist in old version of Vim.
     let l:file_content = system('cat ' . expand('%'))
 
-    let data = {
-              \ 'disabledRules' : s:languagetool_disable_rules,
-              \ 'enabledRules'  : s:languagetool_enable_rules,
-              \ 'disabledCategories' : s:languagetool_disable_categories,
-              \ 'enabledCategories' : s:languagetool_enable_categories,
-              \ 'language' : s:languagetool_lang,
-              \ 'text' : l:file_content,
-              \ 'file' : '%'
-              \ }
+    let data = LanguageTool#config#get()
+    let data['file'] = '%'
 
     call LanguageTool#server#check(data, function('LanguageTool#check#callback'))
 endfunction
