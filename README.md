@@ -42,15 +42,15 @@ See http://www.languagetool.org/ for more information about LanguageTool.
 * Use `:help LanguageTool` to get more details on various commands
   and configuration information.
 
-The two commands are also available from the menu in gvim:
+Some commands are also available from the menu in gvim:
 ```
 Plugin -> LanguageTool -> Check
                        -> Clear
 ```
 
-# Installing the Vim plugin
+# Install
 
-## Installing LanguageTool.nvim with a plugin manager
+## Installing LanguageTool.nvim
 
 You can use any popular plugin manager according to your preference.
 For example, with [vim-plug](https://github.com/junegunn/vim-plug),
@@ -59,7 +59,7 @@ add this line in your `.vimrc`:
 Plug 'vigoux/LanguageTool.nvim'
 ```
 
-# Download LanguageTool
+## Download LanguageTool
 
 To use this plugin, you need to install the Java LanguageTool grammar
 checker. You can choose to:
@@ -79,41 +79,7 @@ checker. You can choose to:
 
 Recent versions of LanguageTool require Java-8.
 
-## Download the stand-alone version of LanguageTool
-
-Download the stand-alone version of LanguageTool (LanguageTool-*.zip)
-from http://www.languagetool.org/, click on "LanguageTool stand-alone
-for your desktop" to download it. Unzip it:
-```
-  $ unzip LanguageTool-3.6.zip
-```
-This should extract the file LanguageTool-3.6/languagetool-commandline.jar
-among several other files.
-
-## Build LanguageTool from sources in git
-
-If you prefer to build LanguageTool yourself from sources, you first need
-to install the pre-requisite packages. On Ubuntu, you need to install the
-following packages:
-```
-  $ sudo apt-get install openjdk-8-jdk mvn git
-```
-LanguageTool can then be downloaded and built with Maven as follows:
-```
-  $ git clone https://github.com/languagetool-org/languagetool.git
-  $ cd languagetool
-  $ mvn clean package
-```
-After the build, the command line version of LanguageTool can be found in:
-```
-  ./languagetool-standalone/target/LanguageTool-3.7-SNAPSHOT/LanguageTool-3.7-SNAPSHOT/languagetool-server.jar
-```
-The version number in the path can vary.
-
 # Configuration
-
-LanguageTool plugin uses the character encoding from the 'fenc' option or from
-the 'enc' option if 'fenc' is empty.
 
 Several global variables can be set in your `.vimrc` to configure the behavior
 of the LanguageTool plugin.
@@ -124,7 +90,7 @@ This variable specifies the location of the LanguageTool java grammar
 checker program. Default is empty.
 Example:
 
-```
+```vim
 :let g:languagetool_server='$HOME/languagetool/languagetool-standalone/target/LanguageTool-3.7-SNAPSHOT/LanguageTool-3.7-SNAPSHOT/languagetool-server.jar'
 ```
 
@@ -172,7 +138,7 @@ For example, to highlight grammar mistakes in blue, and spelling mistakes in
 red, with a curly underline in vim GUIs that support it, add this into your
 colorscheme:
 
-```
+```vim
 hi LanguageToolGrammarError  guisp=blue gui=undercurl guifg=NONE guibg=NONE ctermfg=white ctermbg=blue term=underline cterm=none
 hi LanguageToolSpellingError guisp=red  gui=undercurl guifg=NONE guibg=NONE ctermfg=white ctermbg=red  term=underline cterm=none
 ```
@@ -182,6 +148,12 @@ hi LanguageToolSpellingError guisp=red  gui=undercurl guifg=NONE guibg=NONE cter
 LanguageTool.nvim provides `<Plug>` mappings for a more convenient usage.
 
 `<Plug>(LanguageToolCheck)` can be used in both normal and insert modes to run a check on current buffer.
+
+## Events
+
+`LanguageTool.nvim` triggers some `User` events:
+    * `LanguageToolCheckDone`, which is triggered right after a check is done
+    * `LanguageToolServerStarted`, which is triggered right after the server has started
 
 # FAQ
 
