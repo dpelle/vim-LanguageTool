@@ -1,0 +1,7 @@
+Given (Simple text):
+  Hi i'm a simple test.
+
+Execute (Nothing):
+
+Expect (Nothing changed):
+  Hi i'm a simple test.
