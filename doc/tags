@@ -4,14 +4,12 @@
 :LanguageToolSetUp	LanguageTool.txt	/*:LanguageToolSetUp*
 :LanguageToolSummary	LanguageTool.txt	/*:LanguageToolSummary*
 :LanguageToolSupportedLanguages	LanguageTool.txt	/*:LanguageToolSupportedLanguages*
+<Plug>(LanguageToolCheck)	LanguageTool.txt	/*<Plug>(LanguageToolCheck)*
 LanguageTool	LanguageTool.txt	/*LanguageTool*
 LanguageTool.txt	LanguageTool.txt	/*LanguageTool.txt*
-g:languagetool_disable_categories	LanguageTool.txt	/*g:languagetool_disable_categories*
-g:languagetool_disable_rules	LanguageTool.txt	/*g:languagetool_disable_rules*
-g:languagetool_enable_categories	LanguageTool.txt	/*g:languagetool_enable_categories*
-g:languagetool_enable_rules	LanguageTool.txt	/*g:languagetool_enable_rules*
-g:languagetool_lang	LanguageTool.txt	/*g:languagetool_lang*
+g:languagetool	LanguageTool.txt	/*g:languagetool*
 g:languagetool_server	LanguageTool.txt	/*g:languagetool_server*
+i_<Plug>(LanguageToolCheck)	LanguageTool.txt	/*i_<Plug>(LanguageToolCheck)*
 languagetool-bugs	LanguageTool.txt	/*languagetool-bugs*
 languagetool-configuration	LanguageTool.txt	/*languagetool-configuration*
 languagetool-download	LanguageTool.txt	/*languagetool-download*
