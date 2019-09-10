@@ -13,6 +13,7 @@ jobs:
     - name: Download repo and checkout commit
       run: |
         git clone https://github.com/$GITHUB_REPOSITORY.git /home/repo
+        mkdir -p /root/.local/share/nvim/site/pack/vigoux/start
         cd /home/repo
         git checkout --progress --force $GITHUB_SHA
     - name: Link plugin
