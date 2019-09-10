@@ -152,8 +152,8 @@ LanguageTool.nvim provides `<Plug>` mappings for a more convenient usage.
 ## Events
 
 `LanguageTool.nvim` triggers some `User` events:
-    * `LanguageToolCheckDone`, which is triggered right after a check is done
-    * `LanguageToolServerStarted`, which is triggered right after the server has started
+  * `LanguageToolCheckDone`, which is triggered right after a check is done
+  * `LanguageToolServerStarted`, which is triggered right after the server has started
 
 # FAQ
 
