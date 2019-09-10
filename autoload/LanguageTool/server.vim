@@ -53,6 +53,10 @@ function LanguageTool#server#stdoutHandler(job_id, stdout, event) "{{{1
         let s:lt_server_started = 1
         doautocmd User LanguageToolServerStarted
     endif
+
+    if exists('g:languagetool_debug')
+        echomsg join(a:stdout)
+    endif
 endfunction
 
 " Little util function to handle empty string to url-encode i the request
@@ -131,10 +135,10 @@ endfunction
 " This function is used to send data to the server, for now this is sync, but it will get async
 " it returns the result as the vim dict corresponding to the json answer of the server
 function! LanguageTool#server#check(data, callback) "{{{1
-    let l:request = ' --data-urlencode "data={\"annotation\":[' . escape(LanguageTool#preprocess#getProcessedText(a:data.file), '$"\') . ']}"'
+    let l:request = ' --data-urlencode "data={\"annotation\":[' . escape(LanguageTool#preprocess#getProcessedText(a:data.text), '$"\') . ']}"'
 
     for [l:key, l:value] in items(a:data)
-        if l:key !=? 'file'
+        if l:key !~? '\v(file|text)'
             let l:request .= s:urlEncodeNotEmpty(l:value, l:key)
         endif
     endfor

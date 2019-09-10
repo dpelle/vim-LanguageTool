@@ -48,15 +48,14 @@ endfunction
 " a:line1 and a:line2 parameters are the first and last line number of
 " the range of line to check.
 " Returns 0 if success, < 0 in case of error.
-function! LanguageTool#check() "{{{1
-    call LanguageTool#clear()
-
+function! LanguageTool#check() abort "{{{1
     " Using window ID is more reliable than window number.
     " But win_getid() does not exist in old version of Vim.
     let l:file_content = system('cat ' . expand('%'))
 
     let data = LanguageTool#config#get()
     let data['file'] = '%'
+    let data['text'] = getline(1, line('$'))
 
     call LanguageTool#server#check(data, function('LanguageTool#check#callback'))
 endfunction
@@ -64,27 +63,9 @@ endfunction
 " This function clears syntax highlighting created by LanguageTool plugin
 " and removes the scratch window containing grammar errors.
 function! LanguageTool#clear() "{{{1
-  if exists('s:languagetool_error_buffer')
-    if bufexists(s:languagetool_error_buffer)
-      sil! exe "bd! " . s:languagetool_error_buffer
-    endif
-  endif
-  if exists('s:languagetool_text_winid')
-    let l:win = winnr()
-    " Using window ID is more reliable than window number.
-    " But win_getid() does not exist in old version of Vim.
-    if exists('*win_gotoid')
-      call win_gotoid(s:languagetool_text_winid)
-    else
-      exe s:languagetool_text_winid . ' wincmd w'
-    endif
     call setmatches(filter(getmatches(), 'v:val["group"] !~# "LanguageTool.*Error"'))
     lexpr ''
     lclose
-    exe l:win . ' wincmd w'
-  endif
-  unlet! s:languagetool_error_buffer
-  unlet! s:languagetool_text_winid
 endfunction
 
 " This functions shows the error at point in the preview window
@@ -133,9 +114,16 @@ endfunction
 " and mappings to navigate to them, and fix them
 function! LanguageTool#summary() "{{{1
     let l:errors = b:errors
-    " Open a new window
-    wincmd v
-    enew
+    " Open a new window or jump to current
+    if !bufloaded('LanguageTool') && bufwinid('LanguageTool') < 0
+        wincmd v
+        e LanguageTool
+    else
+        call win_gotoid(bufwinid('LanguageTool'))
+        setlocal modifiable
+        execute '0,$delete'
+    endif
+
 
     for l:error in l:errors
         call LanguageTool#errors#prettyprint(l:error)

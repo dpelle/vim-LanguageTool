@@ -2,7 +2,7 @@
 " Maintainer:   Dominique Pellé <dominique.pelle@gmail.com>
 " Screenshots:  http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_en.png
 "               http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_fr.png
-" Last Change:  2019 Sep 04
+" Last Change:  2019 Sep 09
 " Version:      1.32
 "
 " Long Description: {{{1
@@ -28,10 +28,9 @@
 " i.e. with the distinction between markup and real text
 " For now it reads the file line by line, apply the rules to be applied and returns the text
 " with \n as line separator
-function! LanguageTool#preprocess#getProcessedText(file_path)
+function! LanguageTool#preprocess#getProcessedText(lines)
     let l:result = []
-    let l:source_text = readfile(expand(a:file_path))
-    for l:line in l:source_text
+    for l:line in a:lines
         let l:result = add(l:result, LanguageTool#preprocess#applyRules(l:line))
     endfor
 
@@ -45,5 +44,5 @@ endfunction
 " then be used to differentiate markup and text using rules associated with current
 " filetype
 function! LanguageTool#preprocess#applyRules(line)
-    return '{"text":"' . escape(a:line, '\"') . '\n"}'
+    return '{"text":"' . escape(a:line, "\"\\\t") . '\n"}'
 endfunction

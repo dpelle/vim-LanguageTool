@@ -2,7 +2,7 @@
 " Maintainer:   Dominique Pellé <dominique.pelle@gmail.com>
 " Screenshots:  http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_en.png
 "               http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_fr.png
-" Last Change:  2019 Sep 04
+" Last Change:  2019 Sep 10
 " Version:      1.32
 "
 " Long Description: {{{1
@@ -30,6 +30,8 @@ function! LanguageTool#check#callback(output) "{{{1
         return -1
     endif
 
+    call LanguageTool#clear()
+
     let l:file_content = system('cat ' . expand('%'))
     let l:languagetool_text_winid = exists('*win_getid')
     \                             ? win_getid() : winnr()
@@ -48,8 +50,16 @@ function! LanguageTool#check#callback(output) "{{{1
         let l:error.start_byte_idx = l:start_byte_index
 
         let l:stop_byte_index = byteidxcomp(l:file_content, l:error.offset + l:error.length) + 2
-        let l:error.toy = byte2line(l:stop_byte_index)
-        let l:error.tox = l:stop_byte_index - line2byte(l:error.toy)
+        " Sometimes the error goes too far to the end of the file
+        " causing byte2line to give negative values
+        if byte2line(l:stop_byte_index) >= 0
+            let l:error.toy = byte2line(l:stop_byte_index)
+            let l:error.tox = l:stop_byte_index - line2byte(l:error.toy)
+        else
+            let l:error.toy = line('$')
+            let l:error.tox = col([l:error.toy, '$'])
+        endif
+
         let l:error.stop_byte_idx = l:stop_byte_index
 
         let l:error.source_win = l:languagetool_text_winid
