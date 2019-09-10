@@ -50,7 +50,7 @@ Plugin -> LanguageTool -> Check
 
 # Installing the Vim plugin
 
-## Installing vim-LanguageTool with a plugin manager
+## Installing LanguageTool.nvim with a plugin manager
 
 You can use any popular plugin manager according to your preference.
 For example, with [vim-plug](https://github.com/junegunn/vim-plug),
@@ -128,36 +128,34 @@ Example:
 :let g:languagetool_server='$HOME/languagetool/languagetool-standalone/target/LanguageTool-3.7-SNAPSHOT/LanguageTool-3.7-SNAPSHOT/languagetool-server.jar'
 ```
 
-## `g:languagetool_lang`
+## `g:languagetool`
 
-This variable specifies the language code to use for the language tool checker.
-If undefined, plugin tries to guess the language of the Vim spelling checker
-'spelllang' or v:lang. If neither works, plugin defaults to English US (en-US).
-For languages with variants (currently English German and Portuguese), it is
-necessary to specify the variant in order for LanguageTool to signal spelling
-errors. In other words, with  :set spelllang=en  LanguageTool only signals
-grammar mistakes whereas with  :set spellllang=en_us LanguageTool signals
-spelling mistakes and grammar mistakes.
-Valid language code are provided by `:LanguageToolSupportedLanguages`
+All LanguageTool configuration goes through this varaible, which is organized
+as follows (all lists are comma separated):
 
-## `g:languagetool_disable_rules`
+```vim
+    g:languagetool = {
+        '.' : {
+            {model1} for all filetypes
+        },
+        'my_filetype' : {
+            {model1} for my_filetype
+        }
+    }
 
-This variable specifies checker rules which are disabled. Each disabled
-rule must be comma separated.
+    {model1} = {
+        'enabledRules' : list of enabled rules,
+        'disabledRules' : list of disabled rules,
+        'enabledCategories' : list of enabled categories,
+        'disabledCategories' : list of disabled categories,
+        'language' : the code of the language to check,
+            as given by :LanguageToolSupportedLanguages
+    }
+```
 
-Default value set by plugin is: WHITESPACE_RULE,EN_QUOTES
-
-## `g:languagetool_enable_rules`
-
-This variable specifies checker rules which are enabled.
-
-## `g:languagetool_disable_categories`
-
-This variable specifies checker rule-categories which are disabled.
-
-## `g:languagetool_enable_categories`
-
-This variable specifies checker rule-categories which are enabled.
+Actually, there is more options than those found here, you can found an
+exhaustive list here :
+https://languagetool.org/http-api/swagger-ui/#!/default/post_check
 
 ## Colors
 
@@ -178,6 +176,12 @@ colorscheme:
 hi LanguageToolGrammarError  guisp=blue gui=undercurl guifg=NONE guibg=NONE ctermfg=white ctermbg=blue term=underline cterm=none
 hi LanguageToolSpellingError guisp=red  gui=undercurl guifg=NONE guibg=NONE ctermfg=white ctermbg=red  term=underline cterm=none
 ```
+
+## Mappings
+
+LanguageTool.nvim provides `<Plug>` mappings for a more convenient usage.
+
+`<Plug>(LanguageToolCheck)` can be used in both normal and insert modes to run a check on current buffer.
 
 # FAQ
 

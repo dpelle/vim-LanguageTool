@@ -2,7 +2,7 @@
 " Maintainer:   Dominique Pellé <dominique.pelle@gmail.com>
 " Screenshots:  http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_en.png
 "               http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_fr.png
-" Last Change:  2019 Sep 03
+" Last Change:  2019 Sep 09
 " Version:      1.32
 "
 " Long Description: {{{1
@@ -51,6 +51,10 @@ command! -nargs=0 LanguageToolSummary :call LanguageTool#summary()
 command! -nargs=0 LanguageToolSetUp :call LanguageTool#setup()
 command! -nargs=0 LanguageToolSupportedLanguages :call LanguageTool#languages#supportedLanguages()
 command! -nargs=0 -count=0 LanguageToolFixAtPoint :call LanguageTool#fixErrorAtPoint(<count>)
+
+" Provide mappings {{{1
+nmap <silent> <Plug>(LanguageToolCheck) :<C-U>LanguageToolCheck<CR>
+imap <silent> <Plug>(LanguageToolCheck) <C-O>:<C-U>LanguageToolCheck<CR>
 
 " Autocommands {{{1
 autocmd VimLeave * call LanguageTool#server#stop()

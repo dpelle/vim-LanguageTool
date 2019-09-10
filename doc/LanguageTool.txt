@@ -315,6 +315,16 @@ you can do it like this :
 >
     autocommand User LanguageToolCheckDone LanguageToolSummary
 <
+
+Mappings~
+
+LanguageTool.nvim provides some mappings :
+
+<Plug>(LanguageToolCheck)       *i_<Plug>(LanguageToolCheck)* *<Plug>(LanguageToolCheck)*
+
+This mapping is available is normal and insert mode, and can be used to run a
+check.
+
 Using the Location-list~
 
 The |location-list| is populated when running |:LanguageToolCheck|. So you can
