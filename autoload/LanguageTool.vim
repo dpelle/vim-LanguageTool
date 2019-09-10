@@ -2,7 +2,7 @@
 " Maintainer:   Dominique Pellé <dominique.pelle@gmail.com>
 " Screenshots:  http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_en.png
 "               http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_fr.png
-" Last Change:  2019 Sep 09
+" Last Change:  2019 Sep 10
 " Version:      1.32
 "
 " Long Description: {{{1
@@ -73,7 +73,7 @@ function! LanguageTool#showErrorAtPoint() "{{{1
     let error = LanguageTool#errors#find()
     if !empty(error)
         " Open preview window and jump to it
-        pedit LanguageTool
+        pedit LanguageToolError
         wincmd P
         setlocal modifiable
 
