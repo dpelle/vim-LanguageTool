@@ -18,4 +18,4 @@ jobs:
     - name: Link plugin
       run: ln -s /home/repo /root/.local/share/nvim/site/pack/vigoux/start/LanguageTool.nvim
     - name: Run tests
-      run: nvim -c "Vader! /home/repo/tests/*"
+      run: nvim -c "Vader! /home/repo/tests/*" > /dev/null
