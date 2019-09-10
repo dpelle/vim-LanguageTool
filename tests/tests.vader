@@ -1,7 +1,15 @@
 Given (Simple text):
-  Hi i'm a simple test.
+  This text contain errors.
 
 Execute (Nothing):
+  LanguageToolSetUp
+  sleep 10
+  LanguageToolCheck
+  sleep 10
 
 Expect (Nothing changed):
-  Hi i'm a simple test.
+  This text contain errors.
+
+Then (There is errors):
+  Assert exists('b:errors')
+  Assert !empty(b:errors)
