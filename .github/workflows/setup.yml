@@ -10,8 +10,12 @@ jobs:
       image: vigoux/languagetool.nvim:latest
 
     steps:
-    - uses: actions/checkout@v1
+    - name: Download repo and checkout commit
+      run: |
+        git clone https://github.com/$GITHUB_REPOSITORY.git /home/repo
+        cd /home/repo
+        git checkout --progress --force $GITHUB_SHA
     - name: Link plugin
-      run: ln -s $GITHUB_WORKSPACE/LanguageTool.nvim /root/.local/share/nvim/site/pack/vigoux/start/LanguageTool.nvim
+      run: ln -s /home/repo /root/.local/share/nvim/site/pack/vigoux/start/LanguageTool.nvim
     - name: Run tests
-      run: nvim +"Vader! /root/.local/share/nvim/site/pack/vigoux/start/LanguageTool.nvim/tests/*"
+      run: nvim -c "Vader! /home/repo/tests/*"
