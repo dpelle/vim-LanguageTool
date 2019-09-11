@@ -1,13 +1,11 @@
 " LanguageTool: Grammar checker in Vim for English, French, German, etc.
-" Maintainer:   Dominique Pellé <dominique.pelle@gmail.com>
-" Screenshots:  http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_en.png
-"               http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_fr.png
+" Maintainer:   Thomas Vigouroux <tomvig38@gmail.com>
 " Last Change:  2019 Sep 11
-" Version:      1.32
+" Version:      1.0
 " License: {{{1
 "
-" The VIM LICENSE applies to LanguageTool.vim plugin
-" (see ":help copyright" except use "LanguageTool.vim" instead of "Vim").
+" The VIM LICENSE applies to LanguageTool.nvim plugin
+" (see ":help copyright" except use "LanguageTool.nvim" instead of "Vim").
 "
 " }}} 1
 

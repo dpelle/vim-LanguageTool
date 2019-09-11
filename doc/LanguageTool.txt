@@ -1,6 +1,6 @@
 *LanguageTool.txt*  A grammar checker in Vim for English, French, German, etc. *LanguageTool*
 
-Author:      Dominique Pellé <dominique.pelle@gmail.com>
+Author:      Thomas Vigouroux <tomvig38@gmail.com>
 Last Change: 2019 Sep 03
 
 For Vim version 8.0 and above
@@ -244,6 +244,10 @@ Available flags are :
         `R` : Subrule id
         `u` : URLs associated with the error
 
+Default for both variable is "" which will be interpeted as
+`T{f}M{f}cCE{irRu}` (everything). In this variables the order of the flags
+doesn't matter, as long as modifiers come right after their flag.
+
                          *LanguageToolErrorCount*     *LanguageToolCmd*
                          *LanguageToolGrammarError*   *LanguageToolLabel*
                          *LanguageToolSpellingError*  *LanguageToolUrl*
@@ -395,8 +399,8 @@ Installing both plugins is thus recommended.
 
 9. License                                             *languagetool-license*
 
-The VIM LICENSE applies to the LanguageTool.vim plugin (see |copyright|
-except use "LanguageTool.vim" instead of "Vim").
+The VIM LICENSE applies to the LanguageTool.nvim plugin (see |copyright|
+except use "LanguageTool.nvim" instead of "Vim").
 
 LanguageTool is freely available under LGPL.
 

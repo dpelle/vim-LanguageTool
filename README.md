@@ -152,8 +152,8 @@ LanguageTool.nvim provides `<Plug>` mappings for a more convenient usage.
 ## Events
 
 `LanguageTool.nvim` triggers some `User` events:
-  * `LanguageToolCheckDone`, which is triggered right after a check is done
-  * `LanguageToolServerStarted`, which is triggered right after the server has started
+  - `LanguageToolCheckDone`, which is triggered right after a check is done
+  - `LanguageToolServerStarted`, which is triggered right after the server has started
 
 # FAQ
 
@@ -171,7 +171,7 @@ autocmd Filetype tex LanguageToolSetUp
 
 # License
 
-The VIM LICENSE applies to the LanguageTool.vim plugin (see 
-`:help copyright` but replace "LanguageTool.vim with "Vim").
+The VIM LICENSE applies to the LanguageTool.nvim plugin (see 
+`:help copyright` but replace "LanguageTool.nvim" with "Vim").
 
 LanguageTool is freely available under LGPL.
