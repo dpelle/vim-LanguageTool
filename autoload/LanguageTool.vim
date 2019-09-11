@@ -28,6 +28,8 @@
 " Returns 0 if success, < 0 in case of error.
 function! LanguageTool#setup() "{{{1
     let s:languagetool_server = get(g:, 'languagetool_server', $HOME . '/languagetool/languagetool-server.jar')
+    let s:summary_pp_flags = get(g:, 'languagetool_summary_flags', '')
+    let s:preview_pp_flags = get(g:, 'languagetool_preview_flags', '')
 
     if !filereadable(expand(s:languagetool_server))
         echomsg "LanguageTool cannot be found at: " . s:languagetool_server
