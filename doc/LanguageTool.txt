@@ -6,6 +6,7 @@ Last Change: 2019 Sep 03
 For Vim version 8.0 and above
 
 ============================================================================
+Table of contents
 
 1.  Overview                                      |languagetool-overview|
 2.  Screenshots & Demo                            |languagetool-screenshots|
@@ -210,23 +211,60 @@ in account to configure languagetool for a group of filetypes.
 To match for a filetype only, use its full name, if it can submatch something,
 add '^' at the start and '$' at the end of the key.
 
+g:languagetool_summary_flags                          *g:languagetool_summary_flags*
+g:languagetool_preview_flags                          *g:languagetool_preview_flags*
+
+This variable is used to configure how errors are displayed in the
+summary/preview window. You can configure this using flags as described below.
+These varaibles are composed of characters that will be interpreted to
+configure how summaries will be printed, the syntax for a flag is :
+>
+    FLAG{MODIFIERS}
+<
+FLAG is mandatory, but MODIFIERS are optionnal (except for the `E` flag).
+
+Available flags are :
+    `T` : This flag controls whether error title has to be printed or not
+        Modifiers :
+        `s` : for a short title
+        `f` : for a full error title (this is default)
+
+    `M` : This flag is to control the error message
+        Modifiers : See `T` flag but replace "title" by "message"
+
+    `c` : To control error context
+
+    `C` : To control corrections
+
+    `E` : To control extra informations, it is not printed if no modifier is
+        provided.
+        Modifiers:
+        `i` : Error's category id
+        `r` : Error's rule id
+        `R` : Subrule id
+        `u` : URLs associated with the error
+
+                         *LanguageToolErrorCount*     *LanguageToolCmd*
+                         *LanguageToolGrammarError*   *LanguageToolLabel*
+                         *LanguageToolSpellingError*  *LanguageToolUrl*
+
 You can also customize the following syntax highlighting groups: >
 
-  LanguageToolCmd
-  LanguageToolErrorCount
-  LanguageToolLabel
-  LanguageToolUrl
-  LanguageToolGrammarError
-  LanguageToolSpellingError
+    LanguageToolCmd
+    LanguageToolErrorCount
+    LanguageToolLabel
+    LanguageToolUrl
+    LanguageToolGrammarError
+    LanguageToolSpellingError
 
 For example, to highlight grammar errors in blue, and spelling errors in
 red, with a curly underline in vim GUIs that support it, add this into your
 colorscheme:
 
-```
-hi LanguageToolGrammarError  guisp=blue gui=undercurl guifg=NONE guibg=NONE ctermfg=white ctermbg=blue term=underline cterm=none
-hi LanguageToolSpellingError guisp=red  gui=undercurl guifg=NONE guibg=NONE ctermfg=white ctermbg=red  term=underline cterm=none
-```
+>
+    hi LanguageToolGrammarError  guisp=blue gui=undercurl guifg=NONE guibg=NONE ctermfg=white ctermbg=blue term=underline cterm=none
+    hi LanguageToolSpellingError guisp=red  gui=undercurl guifg=NONE guibg=NONE ctermfg=white ctermbg=red  term=underline cterm=none
+
 
 ============================================================================
 
