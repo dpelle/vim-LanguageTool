@@ -2,7 +2,7 @@
 " Maintainer:   Dominique Pellé <dominique.pelle@gmail.com>
 " Screenshots:  http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_en.png
 "               http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_fr.png
-" Last Change:  2019 Sep 03
+" Last Change:  2019 Sep 11
 " Version:      1.32
 "
 " Long Description: {{{1
@@ -44,31 +44,62 @@ function! LanguageTool#errors#find() "{{{1
 endfunction
 
 " This functions appends a pretty printed version of current error at the end of the current buffer
-function! LanguageTool#errors#prettyprint(error) "{{{1
-    call append(line('.') - 1, 'Error:      '
-                \ . (a:error.index + 1) . ' / ' . a:error.nr_errors
-              \ . ' '  . a:error.rule.id . ( !has_key(a:error.rule, 'subId') ? '' : (':' . a:error.rule['subId']))
-              \ . ' @ ' . a:error.fromy . 'L ' . a:error.fromx . 'C')
-    call append(line('.') - 1, 'Message:    '     . a:error.message)
-    call append(line('.') - 1, 'Context:    ' . a:error.context.text)
+" flags can be used to customize how pretty print is done, see doc for more information
+" set the third argument as start line of the pp to highlight context
+function! LanguageTool#errors#prettyprint(error, flags, ...) "{{{1
+    let l:pretty_print = []
 
-    let l:re = LanguageTool#errors#highlightRegex(line('.') - 1, a:error)
-
-    if a:error.rule.id =~# 'HUNSPELL_RULE\|HUNSPELL_NO_SUGGEST_RULE\|MORFOLOGIK_RULE_\|_SPELLING_RULE\|_SPELLER_RULE'
-        call matchadd('LanguageToolSpellingError', l:re)
+    if empty(a:flags)
+        let l:flags = 'TMcCE{irRu}'
     else
-        call matchadd('LanguageToolGrammarError', l:re)
+        let l:flags = a:flags
     endif
 
-    if has_key(a:error, 'urls')
-        call append(line('.') - 1, 'URL:        ' . a:error.urls[0].value)
-    endif
-    if has_key(a:error, 'replacements')
-        call append(line('.') - 1, 'Corrections:')
-        for l:replacement in a:error.replacements
-            call append(line('.') - 1, '    ' . l:replacement.value)
-        endfor
-    endif
+    let l:flag_pp_part = [
+                \ ['T{s}', [(a:error.index + 1) . ' / ' . a:error.nr_errors
+                    \ . ' @ ' . a:error.fromy . 'L ' . a:error.fromx . 'C : '
+                    \ . ((has_key(a:error, 'shortMessage') && !empty(a:error.shortMessage)) ?
+                    \ a:error.shortMessage : a:error.rule.id)]],
+                \ ['\(T{s}\)\@!\&T', ['Error:      '
+                    \ . (a:error.index + 1) . ' / ' . a:error.nr_errors
+                    \ . ' @ ' . a:error.fromy . 'L ' . a:error.fromx . 'C']],
+                \ ['M{s}', (has_key(a:error, 'shortMessage') && !empty(a:error.shortMessage)) ? 
+                    \ ['Message:    '     . a:error.shortMessage] : 
+                    \ []],
+                \ ['\(M{s}\)\@!\&M', ['Message:    '     . a:error.message]],
+                \ ['c', ['Context:    ' . a:error.context.text]],
+                \ ['C', has_key(a:error, 'replacements') ? 
+                    \ ['Corrections:'] + map(copy(a:error.replacements), '"    " . v:val.value') :
+                    \ []],
+                \ ['E{.\+}', ['More:']],
+                \ ['E{.*i.*}', has_key(a:error.rule.category, 'id') ?
+                    \ ['  Category: ' . a:error.rule.category.id] :
+                    \ []],
+                \ ['E{.*r.*}', ['  Rule:     ' . a:error.rule.id]],
+                \ ['E{.*R.*}', has_key(a:error.rule, 'subId') ? 
+                    \ ['  Subrule:  ' . a:error.rule.subId] :
+                    \ []],
+                \ ['E{.*u.*}' , has_key(a:error.rule, 'urls') ?
+                    \ ['  URLs:'] + map(copy(a:error.rule.urls), '"    " . v:val.value') :
+                    \ []]
+                \ ]
+
+    for [l:flag_part, l:str_to_add] in l:flag_pp_part
+        if l:flags =~# '\m' . l:flag_part && !empty(l:str_to_add)
+            let l:pretty_print += l:str_to_add
+            if l:flag_part ==# 'c' && len(a:000) > 0
+                let l:re = LanguageTool#errors#highlightRegex(a:000[-1] + len(l:pretty_print), a:error)
+
+                if a:error.rule.id =~# 'HUNSPELL_RULE\|HUNSPELL_NO_SUGGEST_RULE\|MORFOLOGIK_RULE_\|_SPELLING_RULE\|_SPELLER_RULE'
+                    call matchadd('LanguageToolSpellingError', l:re)
+                else
+                    call matchadd('LanguageToolGrammarError', l:re)
+                endif
+            endif
+        endif
+    endfor
+
+    return l:pretty_print
 endfunction
 
 " Return a regular expression used to highlight a grammatical error
@@ -99,7 +130,7 @@ function! LanguageTool#errors#highlightRegex(line, error)  "{{{1
     " We use \< and \> because all errors start at the beginning of
     " a word and end at the end of a word
     return  '\V' . l:location_prefix . '\<'
-    \     . substitute(escape(a:error.context.text[l:start_idx : l:end_idx], "'\\"), ' ', '\\_\\s', 'g')
+    \     . substitute(escape(a:error.context.text[l:start_idx : l:end_idx], '''.\'), ' ', '\\_\\s', 'g')
     \     . '\>\ze'
 endfunction
 
@@ -150,8 +181,7 @@ function! LanguageTool#errors#jumpToCurrentError() "{{{1
             exe 'norm! ' . (l:col  - 1) . 'l'
         endif
 
-        echon 'Jump to error ' . (l:error.index + 1) . '/' . l:error.nr_errors
-        \ . ' ' . l:rule . ' @ ' . l:line . 'L ' . l:col . 'C'
+        echon 'Jump to error ' . LanguageTool#errors#prettyprint(l:error, 'T{s}')[0]
         norm! zz
     endif
 endfunction

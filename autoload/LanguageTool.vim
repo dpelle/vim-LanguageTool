@@ -2,7 +2,7 @@
 " Maintainer:   Dominique Pellé <dominique.pelle@gmail.com>
 " Screenshots:  http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_en.png
 "               http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_fr.png
-" Last Change:  2019 Sep 10
+" Last Change:  2019 Sep 11
 " Version:      1.32
 "
 " Long Description: {{{1
@@ -79,7 +79,7 @@ function! LanguageTool#showErrorAtPoint() "{{{1
 
         call clearmatches()
 
-        call LanguageTool#errors#prettyprint(l:error)
+        call append(line('.') - 1, LanguageTool#errors#prettyprint(l:error, s:preview_pp_flags))
 
         let b:error = l:error
 
@@ -126,7 +126,7 @@ function! LanguageTool#summary() "{{{1
 
 
     for l:error in l:errors
-        call LanguageTool#errors#prettyprint(l:error)
+        call append(line('.') - 1, LanguageTool#errors#prettyprint(l:error, s:summary_pp_flags, line('.') - 1))
         call append(line('.') - 1, '')
     endfor
 
@@ -136,14 +136,7 @@ function! LanguageTool#summary() "{{{1
     " We need to transfer the errors to this buffer
     let b:errors = l:errors
 
-    nnoremap <buffer><silent> <CR> :call LanguageTool#errors#jumpToCurrentError()<CR>
-    nnoremap <buffer><silent> f 
-                \ :call LanguageTool#errors#fix(
-                \ LanguageTool#errors#errorAtPoint(),
-                \ LanguageTool#errors#suggestionAtPoint())<CR>
     nnoremap <buffer><silent> q :q<CR>
-    nnoremap <buffer><silent> ]] :execute LanguageTool#errors#nextSummary()<CR>
-    nnoremap <buffer><silent> [[ :execute LanguageTool#errors#previousSummary()<CR>
 
     setlocal filetype=languagetool
     setlocal buftype=nowrite bufhidden=wipe nobuflisted noswapfile nowrap nonumber norelativenumber noma

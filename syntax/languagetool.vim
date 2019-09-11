@@ -2,7 +2,7 @@
 " Maintainer:   Dominique Pellé <dominique.pelle@gmail.com>
 " Screenshots:  http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_en.png
 "               http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_fr.png
-" Last Change:  2019 Sep 03
+" Last Change:  2019 Sep 11
 " Version:      1.32
 " License: {{{1
 "
@@ -13,5 +13,8 @@
 
 " Matchs {{{1
 syntax match LanguageToolErrorCount /\m^Error:.*$/
-syntax match LanguageToolLabel /\v^(Context|Message|Corrections|URL):/
-syntax match LanguageToolUrl /\m^URL:\s*\zs.*/
+syntax match LanguageToolLabel /\v^\s*(Message|Context|Corrections|More|Category|Rule|Subrule):/
+" syntax match LanguageToolUrl /\m^URL:\s*\zs.*/
+
+" Regions {{{1
+syntax region Normal start="More:" end="^$" keepend fold transparent
