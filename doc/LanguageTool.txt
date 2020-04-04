@@ -2,7 +2,7 @@
 *LanguageTool*
 
 Author:      Dominique Pellé <dominique.pelle@gmail.com>
-Last Change: 03 Mar 2017
+Last Change: 05 Mar 2020
 
 For Vim version 7.0 and above
 
@@ -181,7 +181,7 @@ g:languagetool_lang                                      *g:languagetool_lang*
   (currently English German and Portuguese), it is necessary to specify the
   variant in order for LanguageTool to signal spelling errors. In other
   words, with  :set spelllang=en  LanguageTool only signals grammar
-  mistakes whereas with  :set spellllang=en_us LanguageTool signals
+  mistakes whereas with  :set spelllang=en_us LanguageTool signals
   spelling mistakes and grammar mistakes. The valid language codes are: >
 
     ast    Asturian
@@ -269,12 +269,10 @@ You can also customize the following syntax highlighting groups: >
 
 For example, to highlight grammar errors in blue, and spelling errors in
 red, with a curly underline in vim GUIs that support it, add this into your
-colorscheme:
+colorscheme: >
 
-```
-hi LanguageToolGrammarError  guisp=blue gui=undercurl guifg=NONE guibg=NONE ctermfg=white ctermbg=blue term=underline cterm=none
-hi LanguageToolSpellingError guisp=red  gui=undercurl guifg=NONE guibg=NONE ctermfg=white ctermbg=red  term=underline cterm=none
-```
+  hi LanguageToolGrammarError  guisp=blue gui=undercurl guifg=NONE guibg=NONE ctermfg=white ctermbg=blue term=underline cterm=none
+  hi LanguageToolSpellingError guisp=red  gui=undercurl guifg=NONE guibg=NONE ctermfg=white ctermbg=red  term=underline cterm=none
 
 ============================================================================
 
