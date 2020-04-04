@@ -159,7 +159,7 @@ If undefined, plugin tries to guess the language of the Vim spelling checker
 For languages with variants (currently English German and Portuguese), it is
 necessary to specify the variant in order for LanguageTool to signal spelling
 errors. In other words, with  :set spelllang=en  LanguageTool only signals
-grammar mistakes whereas with  :set spellllang=en_us LanguageTool signals
+grammar mistakes whereas with  :set spelllang=en_us LanguageTool signals
 spelling mistakes and grammar mistakes. The valid language codes are:
 
 ```
