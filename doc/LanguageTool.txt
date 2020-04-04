@@ -171,6 +171,18 @@ g:languagetool_jar                                       *g:languagetool_jar*
 
   :let g:languagetool_jar='$HOME/languagetool/languagetool-standalone/target/LanguageTool-4.3-SNAPSHOT/LanguageTool-4.3-SNAPSHOT/languagetool-commandline.jar'
 
+g:languagetool_cmd                                       *g:languagetool_cmd*
+
+  Conversely, you could use this variable to specify by yourself the
+  command call. This variable take priority over g:languagetool_jar.
+  This is usefull for system package management installs like for
+  archlinux.
+
+  Example: >
+
+  :let g:languagetool_cmd='/usr/bin/languagetool'
+  :let g:languagetool_cmd='java -jar $HOME/languagetool/languagetool-standalone/target/LanguageTool-4.3-SNAPSHOT/LanguageTool-4.3-SNAPSHOT/languagetool-commandline.jar'
+
 g:languagetool_lang                                      *g:languagetool_lang*
 
   The language code to use for the language tool checker. If undefined,
