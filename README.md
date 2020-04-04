@@ -105,12 +105,12 @@ Recent versions of LanguageTool require Java-8.
 ## Download the stand-alone version of LanguageTool
 
 Download the stand-alone version of LanguageTool (LanguageTool-*.zip)
-from http://www.languagetool.org/, click on "LanguageTool stand-alone
-for your desktop" to download it. Unzip it:
+from http://www.languagetool.org/, scroll down and click on
+"Desktop version for offline use" to download it. Unzip it:
 ```
-  $ unzip LanguageTool-3.6.zip
+  $ unzip LanguageTool-4.9.zip
 ```
-This should extract the file LanguageTool-3.6/languagetool-commandline.jar
+This should extract the file LanguageTool-4.9/languagetool-commandline.jar
 among several other files.
 
 ## Build LanguageTool from sources in git
@@ -129,7 +129,7 @@ LanguageTool can then be downloaded and built with Maven as follows:
 ```
 After the build, the command line version of LanguageTool can be found in:
 ```
-  ./languagetool-standalone/target/LanguageTool-3.7-SNAPSHOT/LanguageTool-3.7-SNAPSHOT/languagetool-commandline.jar
+  ./languagetool-standalone/target/LanguageTool-5.0-SNAPSHOT/LanguageTool-5.0-SNAPSHOT/languagetool-commandline.jar
 ```
 The version number in the path can vary.
 
@@ -148,7 +148,7 @@ checker program. Default is empty.
 Example:
 
 ```
-:let g:languagetool_jar='$HOME/languagetool/languagetool-standalone/target/LanguageTool-3.7-SNAPSHOT/LanguageTool-3.7-SNAPSHOT/languagetool-commandline.jar'
+:let g:languagetool_jar='$HOME/languagetool/languagetool-standalone/target/LanguageTool-5.0-SNAPSHOT/LanguageTool-5.0-SNAPSHOT/languagetool-commandline.jar'
 ```
 
 ## `g:languagetool_lang`

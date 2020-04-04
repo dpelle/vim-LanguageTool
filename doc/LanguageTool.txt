@@ -117,12 +117,12 @@ Recent versions of LanguageTool require Java-8.
 4.2.1 Download the stand-alone version of LanguageTool~
 
 Download the stand-alone version of LanguageTool (LanguageTool-*.zip)
-from http://www.languagetool.org/, click on "LanguageTool stand-alone
-for your desktop" to download it. Unzip it: >
+from http://www.languagetool.org/, scroll down and click on
+"Desktop version for offline use" to download it. Unzip it:
 
-  $ unzip LanguageTool-3.6.zip
+  $ unzip LanguageTool-4.9.zip
 
-This should extract the file LanguageTool-3.6/languagetool-commandline.jar
+This should extract the file LanguageTool-4.9/languagetool-commandline.jar
 among several other files.
 
 4.2.2 Build LanguageTool from sources in git~
@@ -141,14 +141,14 @@ LanguageTool can then be downloaded and built with Maven as follows: >
 
 After the build, the command line version of LanguageTool can be found in: >
 
-  ./languagetool-standalone/target/LanguageTool-4.3-SNAPSHOT/LanguageTool-4.3-SNAPSHOT/languagetool-commandline.jar
+  ./languagetool-standalone/target/LanguageTool-5.0-SNAPSHOT/LanguageTool-5.0-SNAPSHOT/languagetool-commandline.jar
 
 4.3 Configuring the location of the jar file~
 
 After installing LanguageTool, you must specify the location of the file
 languagetool-commandline.jar in your $HOME/.vimrc file. Example: >
 
-  let g:languagetool_jar='$HOME/languagetool/languagetool-standalone/target/LanguageTool-4.3-SNAPSHOT/LanguageTool-4.3-SNAPSHOT/languagetool-commandline.jar'
+  let g:languagetool_jar='$HOME/languagetool/languagetool-standalone/target/LanguageTool-5.0-SNAPSHOT/LanguageTool-5.0-SNAPSHOT/languagetool-commandline.jar'
 
 See section |languagetool-configuration| for more optional settings.
 
@@ -169,7 +169,7 @@ g:languagetool_jar                                       *g:languagetool_jar*
 
   Example: >
 
-  :let g:languagetool_jar='$HOME/languagetool/languagetool-standalone/target/LanguageTool-4.3-SNAPSHOT/LanguageTool-4.3-SNAPSHOT/languagetool-commandline.jar'
+  :let g:languagetool_jar='$HOME/languagetool/languagetool-standalone/target/LanguageTool-5.0-SNAPSHOT/LanguageTool-5.0-SNAPSHOT/languagetool-commandline.jar'
 
 g:languagetool_cmd                                       *g:languagetool_cmd*
 
@@ -190,12 +190,13 @@ g:languagetool_lang                                      *g:languagetool_lang*
   'spelllang' or v:lang. If neither works, plugin defaults to
   English US (en-US). Starting with LanguageTool-1.8, regional variants
   of some languages can be specified. For languages with variants
-  (currently English German and Portuguese), it is necessary to specify the
-  variant in order for LanguageTool to signal spelling errors. In other
-  words, with  :set spelllang=en  LanguageTool only signals grammar
-  mistakes whereas with  :set spelllang=en_us LanguageTool signals
-  spelling mistakes and grammar mistakes. The valid language codes are: >
+  it is necessary to specify the variant in order for LanguageTool
+  to signal spelling errors. In other words, with  :set spelllang=en
+  LanguageTool only signals grammar mistakes whereas with
+  :set spelllang=en_us LanguageTool signals spelling mistakes and
+  grammar mistakes. The valid language codes are: >
 
+    ar     Arabic
     ast    Asturian
     be     Belarusian
     br     Breton
@@ -218,6 +219,7 @@ g:languagetool_lang                                      *g:languagetool_lang*
     es     Spanish
     fa     Persian
     fr     French
+    ga     Irish
     gl     Galician
     it     Italian
     ja     Japanese
@@ -228,6 +230,7 @@ g:languagetool_lang                                      *g:languagetool_lang*
     pl     Polish
     pt     Portuguese
     pt-BR  Portuguese (Brazil)
+    pt-MZ  Portuguese (Mozambique)
     pt-PT  Portuguese (Portugal)
     ro     Romanian
     ru     Russian
