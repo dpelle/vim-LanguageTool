@@ -2,15 +2,15 @@
 " Maintainer:   Dominique Pellé <dominique.pelle@gmail.com>
 " Screenshots:  http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_en.png
 "               http://dominique.pelle.free.fr/pic/LanguageToolVimPlugin_fr.png
-" Last Change:  2017/12/22
-" Version:      1.32
+" Last Change:  2020/03/05
+" Version:      1.33
 "
 " Long Description: {{{1
 "
 " This plugin integrates the LanguageTool grammar checker into Vim.
 " Current version of LanguageTool can check grammar in many languages:
-" ast, be, br, ca, da, de, el, en, eo, es, fa, fr, gl, is, it, ja, km, lt,
-" ml, nl, pl, pt, ro, ru, sk, sl, sv, ta, tl, uk, zh.
+" ar ast, be, br, ca, da, de, el, en, eo, es, fa, fr, ga, gl, it, ja,
+" km, nl, pl, pt, ro, ru, sk, sl, sk, sv, ta, tl, uk, zh.
 "
 " See doc/LanguageTool.txt for more details about how to use the
 " LanguageTool plugin.
@@ -37,8 +37,9 @@ function s:FindLanguage(lang) "{{{1
   \  '\=tolower(submatch(1)) . toupper(submatch(2))', ''),
   \  '_', '-', '')
 
-  " All supported languages (with variants) from version LanguageTool.
+  " All supported languages (with variants) by LanguageTool.
   let l:supportedLanguages =  {
+  \  'ar'    : 1,
   \  'ast'   : 1,
   \  'be'    : 1,
   \  'br'    : 1,
@@ -61,17 +62,17 @@ function s:FindLanguage(lang) "{{{1
   \  'es'    : 1,
   \  'fa'    : 1,
   \  'fr'    : 1,
+  \  'ga'    : 1,
   \  'gl'    : 1,
-  \  'is'    : 1,
   \  'it'    : 1,
   \  'ja'    : 1,
   \  'km'    : 1,
   \  'lt'    : 1,
-  \  'ml'    : 1,
   \  'nl'    : 1,
   \  'pl'    : 1,
   \  'pt'    : 1,
   \  'pt-BR' : 1,
+  \  'pt-MZ' : 1,
   \  'pt-PT' : 1,
   \  'ro'    : 1,
   \  'ru'    : 1,

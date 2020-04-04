@@ -224,8 +224,6 @@ g:languagetool_lang                                      *g:languagetool_lang*
     it     Italian
     ja     Japanese
     km     Khmer
-    lt     Lithuanian
-    ml     Malayalam
     nl     Dutch
     pl     Polish
     pt     Portuguese
@@ -294,7 +292,7 @@ colorscheme: >
 6. Features                                           *languagetool-features*
 
 The LanguageTool plugin defines 2 commands |:LanguageToolCheck| and
-|:LanguageToolClean|.
+|:LanguageToolClear|.
 
 :LanguageToolCheck                                       *:LanguageToolCheck*
 
