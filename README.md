@@ -119,7 +119,7 @@ If you prefer to build LanguageTool yourself from sources, you first need
 to install the prerequisite packages. On Ubuntu, you need to install the
 following packages:
 ```
-  $ sudo apt-get install openjdk-8-jdk mvn git
+  $ sudo apt-get install openjdk-8-jdk maven git
 ```
 LanguageTool can then be downloaded and built with Maven as follows:
 ```
