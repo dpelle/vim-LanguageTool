@@ -247,13 +247,24 @@ g:languagetool_lang                                      *g:languagetool_lang*
 
 g:languagetool_disable_rules                   *g:languagetool_disable_rules*
 
-  This variable specifies checker rules which are disabled. Each disabled
-  rule must be comma separated.
+  This variable specifies checker rules to disable. The set of disabled rule
+  mustbe comma separated.
   Default value set by plugin is: WHITESPACE_RULE,EN_QUOTES
+
+  Example: >
+
+  :let g:languagetool_disable_rules='ENGLISH_WORD_REPEAT_BEGINNING_RULE,WHITESPACE_RULE,EN_QUOTES,FRENCH_WHITESPACE,UPPERCASE_SENTENCE_START,APOS'
 
 g:languagetool_enable_rules                     *g:languagetool_enable_rules*
 
-  This variable specifies checker rules which are enabled.
+  Some LanguageTool rules are disabled by default (rules that contain
+  default="off" in grammar.xml) because they might be stylistic, nitpicky
+  or give frequent positive.
+
+  Those rules can be enabled by setting the g:languagetool_enable_rules
+  variable. Example: >
+
+  :let g:languagetool_enable_rules=PASSIVE_VOICE
 
 g:languagetool_disable_categories         *g:languagetool_disable_categories*
 
