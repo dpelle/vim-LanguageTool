@@ -2,7 +2,7 @@
 *LanguageTool*
 
 Author:      Dominique Pellé <dominique.pelle@gmail.com>
-Last Change: 05 Mar 2020
+Last Change: 05 Apr 2020
 
 For Vim version 7.0 and above
 
