@@ -116,7 +116,7 @@ among several other files.
 ## Build LanguageTool from sources in git
 
 If you prefer to build LanguageTool yourself from sources, you first need
-to install the pre-requisite packages. On Ubuntu, you need to install the
+to install the prerequisite packages. On Ubuntu, you need to install the
 following packages:
 ```
   $ sudo apt-get install openjdk-8-jdk mvn git
@@ -155,8 +155,8 @@ Example:
 
 This variable specifies the language code to use for the language tool checker.
 If undefined, plugin tries to guess the language of the Vim spelling checker
-'spelllang' or v:lang. If neither works, plugin defaults to English US (en-US).
-For languages with variants (currently English German and Portuguese), it is
+'spelllang' or v:lang. If neither work, plugin defaults to English US (en-US).
+For languages with variants (currently English, German and Portuguese), it is
 necessary to specify the variant in order for LanguageTool to signal spelling
 errors. In other words, with  :set spelllang=en  LanguageTool only signals
 grammar mistakes whereas with  :set spelllang=en_us LanguageTool signals

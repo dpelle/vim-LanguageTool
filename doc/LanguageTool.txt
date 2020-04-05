@@ -84,8 +84,8 @@ The zip file contains the following files: >
 
 You have to enable plugins by adding these two lines in your |.vimrc| file: >
 
-  set nocompatible
-  filetype plugin on
+  :set nocompatible
+  :filetype plugin on
 
 Alternatively, if you prefer to use Vundle or Pathogen plugin managers,
 the plugin is available on github at:
@@ -128,7 +128,7 @@ among several other files.
 4.2.2 Build LanguageTool from sources in git~
 
 If you prefer to build LanguageTool yourself from sources, you first need
-to install the pre-requisite packages. On Ubuntu, you need to install the
+to install the prerequisite packages. On Ubuntu, you need to install the
 following packages: >
 
   $ sudo apt-get install openjdk-8-jdk maven git
@@ -148,7 +148,7 @@ After the build, the command line version of LanguageTool can be found in: >
 After installing LanguageTool, you must specify the location of the file
 languagetool-commandline.jar in your $HOME/.vimrc file. Example: >
 
-  let g:languagetool_jar='$HOME/languagetool/languagetool-standalone/target/LanguageTool-5.0-SNAPSHOT/LanguageTool-5.0-SNAPSHOT/languagetool-commandline.jar'
+  :let g:languagetool_jar='$HOME/languagetool/languagetool-standalone/target/LanguageTool-5.0-SNAPSHOT/LanguageTool-5.0-SNAPSHOT/languagetool-commandline.jar'
 
 See section |languagetool-configuration| for more optional settings.
 
@@ -174,8 +174,8 @@ g:languagetool_jar                                       *g:languagetool_jar*
 g:languagetool_cmd                                       *g:languagetool_cmd*
 
   Conversely, you could use this variable to specify by yourself the
-  command call. This variable take priority over g:languagetool_jar.
-  This is usefull for system package management installs like for
+  command call. This variable takes priority over g:languagetool_jar.
+  This is useful for system package management installs like for
   archlinux.
 
   Example: >
@@ -187,9 +187,9 @@ g:languagetool_lang                                      *g:languagetool_lang*
 
   The language code to use for the language tool checker. If undefined,
   plugin tries to guess the language of the Vim spelling checker
-  'spelllang' or v:lang. If neither works, plugin defaults to
+  'spelllang' or v:lang. If neither work, plugin defaults to
   English US (en-US). Starting with LanguageTool-1.8, regional variants
-  of some languages can be specified. For languages with variants
+  of some languages can be specified. For languages with variants,
   it is necessary to specify the variant in order for LanguageTool
   to signal spelling errors. In other words, with  :set spelllang=en
   LanguageTool only signals grammar mistakes whereas with
@@ -284,8 +284,8 @@ For example, to highlight grammar errors in blue, and spelling errors in
 red, with a curly underline in vim GUIs that support it, add this into your
 colorscheme: >
 
-  hi LanguageToolGrammarError  guisp=blue gui=undercurl guifg=NONE guibg=NONE ctermfg=white ctermbg=blue term=underline cterm=none
-  hi LanguageToolSpellingError guisp=red  gui=undercurl guifg=NONE guibg=NONE ctermfg=white ctermbg=red  term=underline cterm=none
+  :hi LanguageToolGrammarError  guisp=blue gui=undercurl guifg=NONE guibg=NONE ctermfg=white ctermbg=blue term=underline cterm=none
+  :hi LanguageToolSpellingError guisp=red  gui=undercurl guifg=NONE guibg=NONE ctermfg=white ctermbg=red  term=underline cterm=none
 
 ============================================================================
 
