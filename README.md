@@ -88,9 +88,9 @@ To use this plugin, you need to install the Java LanguageTool grammar
 checker. You can chose to:
 
 * Download the stand-alone version of
-  LanguageTool(LanguageTool-\*.zip) from
-  [here](http://www.languagetool.org/) using the orange button labeled
-  "LanguageTool for standalone for your desktop".
+  LanguageTool(LanguageTool-stable.zip) from
+  [here](https://dev.languagetool.org/http-server.html) using the 
+  first link labeled "Getting the server" at the top of the page.
 
 * or download a nightly build LanguageTool-.\*-snapshot.zip from
   http://www.languagetool.org/download/snapshots/. It contains a
@@ -104,13 +104,13 @@ Recent versions of LanguageTool require Java-8.
 
 ## Download the stand-alone version of LanguageTool
 
-Download the stand-alone version of LanguageTool (LanguageTool-*.zip)
-from http://www.languagetool.org/, scroll down and click on
-"Desktop version for offline use" to download it. Unzip it:
+Download the stand-alone version of LanguageTool (LanguageTool-stable.zip)
+from https://dev.languagetool.org/http-server.html, scroll down and click on
+"LanguageTool Desktop version for offline use". Unzip it:
 ```
-  $ unzip LanguageTool-4.9.zip
+  $ unzip LanguageTool-stable.zip
 ```
-This should extract the file LanguageTool-4.9/languagetool-commandline.jar
+This should extract the file LanguageTool-5.1/languagetool-commandline.jar
 among several other files.
 
 ## Build LanguageTool from sources in git
