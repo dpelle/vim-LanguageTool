@@ -105,7 +105,7 @@ Recent versions of LanguageTool require Java-8.
 ## Download the stand-alone version of LanguageTool
 
 Download the stand-alone version of LanguageTool (LanguageTool-*.zip)
-from http://www.dev.languagetool.org/http-server.html/, scroll down and click on
+from https://dev.languagetool.org/http-server.html/, scroll down and click on
 "Desktop version for offline use" to download it. Unzip it:
 ```
   $ unzip LanguageTool-4.9.zip
