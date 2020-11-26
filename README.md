@@ -89,8 +89,8 @@ checker. You can chose to:
 
 * Download the stand-alone version of
   LanguageTool(LanguageTool-\*.zip) from
-  [here](http://www.languagetool.org/) using the orange button labeled
-  "LanguageTool for standalone for your desktop".
+  [here](https://dev.languagetool.org/http-server.html) using the 
+  first link labeled "Getting the server" at the top of the page.
 
 * or download a nightly build LanguageTool-.\*-snapshot.zip from
   http://www.languagetool.org/download/snapshots/. It contains a
