@@ -101,7 +101,7 @@ Recent versions of LanguageTool require Java-8.
 4.2.1 Download the stand-alone version of LanguageTool~
 
 Download the latest stable stand-alone version of LanguageTool
-(file LanguageTool-*.zip) from http://www.languagetool.org/downloaad/ >
+(file LanguageTool-*.zip) from http://www.languagetool.org/download/ >
 
   $ wget https://languagetool.org/download/LanguageTool-5.2.zip
   $ unzip LanguageTool-5.2.zip
