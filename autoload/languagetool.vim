@@ -329,7 +329,7 @@ function languagetool#Check(line1, line2) "{{{1
     map <silent> <buffer> <CR> :call <sid>JumpToCurrentError()<CR>
     redraw
     echon 'Press <Enter> on error in scratch buffer to jump its location'
-    exe "norm! \<C-W>\<C-P>"
+    wincmd p
   else
     " Negative s:languagetool_win_height -> no scratch window.
     bd!
