@@ -275,6 +275,12 @@ g:languagetool_win_height                         *g:languagetool_win_height*
   to let Vim pick a default size.
   Default is: 14
 
+g:languagetool_filter                                 g:languagetool_filter
+
+  This variable sets the filter to send the document through before it arrives
+  at LanguageTool. You can use it to strip control characters and other
+  metadata that will be misidentified as grammatical errors.
+
 You can also customize the following syntax highlighting groups: >
 
   LanguageToolCmd
