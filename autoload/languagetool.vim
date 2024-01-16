@@ -231,9 +231,14 @@ function languagetool#Check(line1, line2) "{{{1
   let l:range = a:line1 . ',' . a:line2
   silent exe l:range . 'w!' . l:tmpfilename
 
+  " set the filter to 'cat' unless otherwise specified.
+  let l:languagetool_filter = exists("g:languagetool_filter")
+  \ ? g:languagetool_filter
+  \ : "cat"
+
   let l:languagetool_cmd = exists("g:languagetool_cmd")
   \ ? g:languagetool_cmd
-  \ : 'java -jar ' . s:languagetool_jar
+  \ : l:languagetool_filter . ' ' . l:tmpfilename . ' | java -jar ' . s:languagetool_jar
 
   let l:languagetool_cmd = l:languagetool_cmd
   \ . ' -c '    . s:languagetool_encoding
@@ -242,7 +247,7 @@ function languagetool#Check(line1, line2) "{{{1
   \ . (empty(s:languagetool_disable_categories) ? '' : ' --disablecategories '.s:languagetool_disable_categories)
   \ . (empty(s:languagetool_enable_categories) ?  '' : ' --enablecategories '.s:languagetool_enable_categories)
   \ . ' -l '    . s:languagetool_lang
-  \ . ' --api ' . l:tmpfilename
+  \ . ' --api /dev/stdin'
   \ . ' 2> '    . l:tmperror
 
   sil exe '%!' . l:languagetool_cmd
@@ -289,7 +294,7 @@ function languagetool#Check(line1, line2) "{{{1
     " Reformat the output of LanguageTool (XML is not human friendly) and
     " set up syntax highlighting in the buffer which shows all errors.
     %d
-    call append(0, '# ' . l:languagetool_cmd)
+    call append(0, '# ' . substitute(l:languagetool_cmd, l:tmpfilename, "<file>", "g"))
     set bt=nofile
     setlocal nospell
     syn clear
